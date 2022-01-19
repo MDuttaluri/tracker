@@ -1,0 +1,13 @@
+.compactNav{
+    display: grid;
+    min-height: 30px;
+    padding : 10px;
+    grid-template-columns: 30% 70%;
+    align-items: center;
+   
+    &>p{
+        font-size: large;
+        font-weight: 600;
+    }
+    
+}

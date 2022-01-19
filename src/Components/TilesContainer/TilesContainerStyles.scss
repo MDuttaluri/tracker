@@ -1,0 +1,19 @@
+.tilesContainer{
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: center;
+    align-items: center;
+    margin-top: 5vh;
+    row-gap : 20px;
+}
+
+.tile{
+    padding : 10px;
+    display: flex;
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.329);
+    width: 100px;
+    height : 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
