@@ -30,17 +30,26 @@ function EditTask() {
             _endAt: endDateRef.current?.value || "",
             _isRecurring: task.range._isRecurring || false
         }
+        console.log(`logging task now`);
+        task.logTask();
         addTaskToStorage(task);
+        console.log(taskData);
+        let modifiedState = { ...taskData }
+        modifiedState[taskId] = task.getTaskJSON();
+        console.log(modifiedState);
+
+        setTaskData(modifiedState)
     }
 
     useEffect(() => {
         if (taskId) {
-            //  console.log(taskId);
-            //console.log(taskData[taskId]);
+            console.log(`TASK ID : ${taskId}`);
+            console.log(taskData[taskId]);
             if (taskData[taskId]) {
-
+                const taskJSON = taskData[taskId];
+                task = new Task()
                 task.cloneFromJSON(taskData[taskId])
-                //   task.logTask();
+                task.logTask();
                 nameRef.current?.setAttribute('value', task.name)
                 startDateRef.current?.setAttribute('value', task.range?._startFrom || "");
                 endDateRef.current?.setAttribute('value', task.range?._endAt || "");
@@ -50,7 +59,7 @@ function EditTask() {
                 setIsLoading(false)
             }
         }
-    }, [taskData])
+    }, [taskData, taskId])
 
     return (
         <div>

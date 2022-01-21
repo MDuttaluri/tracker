@@ -19,13 +19,19 @@ export class Task {
         console.log(obj);
 
         if (obj) {
-            this._taskId = obj._taskId
-            this._name = obj._name
-            this._description = obj._description
-            this._priority = obj._priority
-            this._isCompleted = obj._isCompleted
-            this._range = obj._range
+            this._taskId = obj.taskId
+            this._name = obj.name
+            this._description = obj.description
+            this._priority = obj.priority
+            this._isCompleted = obj.isCompleted
+            this._range = obj.range
+        } else {
+            console.log(`skip aindhi andoi!`);
+
         }
+        console.log(`Cloning finished...`);
+        this.logTask();
+
     }
 
     public get taskId() {
@@ -68,7 +74,8 @@ export class Task {
 
     public getTaskJSON: any = () => {
         return {
-            id: this._taskId,
+            //asdkjasgbdfaj,hsdfb hjlzcsbvj
+            taskId: this._taskId,
             name: this._name,
             description: this._description,
             priority: this._priority,
@@ -105,7 +112,7 @@ export function setTasksCount(newCount: number) {
 }
 
 
-export function addTaskToStorage(task: Task) {
+export function addTaskToStorage(task: any) {
     const storedTasks = localStorage.getItem('tasks');
     let updatedTasks = <any>{}
     if (storedTasks != null) {

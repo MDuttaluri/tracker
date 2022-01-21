@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { TaskDataContext } from "../../App";
 import { TaskComponent } from "../../Pages/Tasks/TasksHome";
 import { Task } from "../Task/Task";
 
@@ -7,28 +8,45 @@ interface TasksListPropsInterface {
 }
 
 export function TasksList(props: TasksListPropsInterface) {
+    const [taskData, setTaskData] = useContext(TaskDataContext);
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
-        let tempTasks = [] as Task[]
-        console.log(props.tasks);
+        console.warn("ok now context updated"); console.warn(taskData);
+    }, [taskData])
 
-        Object.keys(props.tasks).map((taskId) => {
-            console.log(`key : ${taskId}`);
 
-            if (taskId != 'tasksCount') {
-                const newTaskObj = new Task()
-                newTaskObj.cloneFromJSON(props.tasks[taskId])
-                tempTasks.push(newTaskObj)
-            }
-        })
-        setTasks([...tempTasks]);
-    }, [])
+    useEffect(() => {
+        if (taskData) {
+            console.log(taskData);
+
+            let tempTasks = [] as Task[]
+            Object.keys(taskData).map((taskId) => {
+                console.log(`key : ${taskId}`);
+
+                if (taskId != 'tasksCount') {
+                    const newTaskObj = new Task()
+                    newTaskObj.cloneFromJSON(taskData[taskId])
+                    tempTasks.push(newTaskObj)
+                }
+
+            })
+            setTasks([...tempTasks]);
+        }
+    }, [taskData])
+
+    useEffect(() => {
+        console.log(`tasks list updated!!!!!!!!!!!!!!!!`);
+        console.log(tasks);
+        console.log(taskData);
+    }, [tasks])
 
     return (
         <div className='outerDiv grid--center taskList'>
             {tasks.length > 0 && tasks.map((val, idx) => {
                 console.log(`Task comp created`);
+                console.log(val);
+
                 return <TaskComponent key={'taskComp' + idx} task={val} />
             })}
         </div>

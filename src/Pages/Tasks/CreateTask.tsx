@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
+import { TaskDataContext } from '../../App';
 import CompactNav from '../../Components/CompactNav/CompactNav';
 import Selector from '../../Components/Selector/Selector';
 import { addTaskToStorage, Task, TaskPriority } from '../../Components/Task/Task';
@@ -19,6 +20,7 @@ export function mapPriority(level: number) {
 }
 
 function CreateTask() {
+    const [taskData, setTaskData] = useContext(TaskDataContext);
     const nameRef = useRef<HTMLInputElement>(null);
     const startDateRef = useRef<HTMLInputElement>(null);
     const endDateRef = useRef<HTMLInputElement>(null);
@@ -29,7 +31,10 @@ function CreateTask() {
         e.preventDefault();
         const newTask = new Task(nameRef.current?.value ?? "Task Name empty", descriptionRef.current?.value, mapPriority(priorityValue), false)
         //newTask.logTask();
-        addTaskToStorage(newTask)
+        addTaskToStorage(newTask.getTaskJSON())
+        let modifiedState = { ...taskData };
+        modifiedState[newTask.taskId] = newTask.getTaskJSON();
+        setTaskData(modifiedState);
     }
 
     return <div>

@@ -13,7 +13,6 @@
 
 .taskList{
     display: grid;
-    width: 100%;
     gap : 20px;
 }
 
@@ -39,7 +38,6 @@
 .taskComponent{
     display: grid;
     grid-template-columns: 35% auto;
-    padding : 0 10px;
     width: 100vw;
 }
 

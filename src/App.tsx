@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import './App.scss';
+import Calculator from './Components/Calculator/Calculator';
 import { getTasksCount } from './Components/Task/Task';
 import TilesContainer from './Components/TilesContainer/TilesContainer';
 import CreateTask from './Pages/Tasks/CreateTask';
@@ -17,6 +18,7 @@ function loadTaskData(setTaskData?: any) {
     taskData = JSON.parse(localData);
 
   if (setTaskData) {
+    console.log(`init load of data abt to begin`);
     setTaskData(taskData);
   }
   return taskData;
@@ -30,9 +32,15 @@ function App() {
   const [taskData, setTaskData] = useState({});
 
   useEffect(() => {
-    //Load or fetch task data and set it to the local state.
+    //Load task data and set it to the local state.
     loadTaskData(setTaskData)
   }, [])
+
+
+  useEffect(() => {
+    console.warn("REYYYYYYYYYYYYYYYYYYYYYYYYYYYYY UPDATE");
+    console.warn(taskData)
+  }, [taskData])
 
 
   return (
@@ -43,6 +51,7 @@ function App() {
           <Route path="/tasks" element={<TasksHome />} />
           <Route path="/createTask" element={<CreateTask />} />
           <Route path="/editTask/:taskId" element={<EditTask />} />
+          <Route path="/calculator" element={<Calculator />} />
         </Routes>
       </BrowserRouter>
     </TaskDataContext.Provider>

@@ -16,7 +16,7 @@ function TilesContainer() {
     return <div className='tilesContainer'>
         <Tile toURL='/tasks' content='Tasks' icon={<TasksIcon height={'30px'} />} />
         <Tile toURL='/' content='Journal' icon={<BookIcon height={'30px'} />} />
-        <Tile toURL='/' content='Calculator' icon={<CalcIcon height={'30px'} />} />
+        <Tile toURL='/calculator' content='Calculator' icon={<CalcIcon height={'30px'} />} />
         <Tile toURL='/' content='Settings' icon={<GearIcon height={'30px'} />} />
     </div>;
 }

@@ -1,6 +1,8 @@
+import React from 'react';
 import './CompactNav.scss';
 import { ReactComponent as BackIcon } from '../../assets/back-icon.svg';
 import { NavLink } from 'react-router-dom';
+import Testcomp from '../testcomp';
 
 interface CompactNavExtraLinkInterface {
     link: string,
@@ -21,6 +23,7 @@ function CompactNav(props: CompactNavPropsInterface) {
         <NavLink to={props.backTo} className='CompactNav--link'><BackIcon className='icon' /></NavLink>
         <p>{props.content}</p>
         {props.extraLink && <NavLink to={props.extraLink.link}>{props.extraLink.label}</NavLink>}
+        <Testcomp />
     </div>;
 }
 
