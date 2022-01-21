@@ -10,27 +10,38 @@
 }
 
 
-.taskComponent{
-    display: flex;
-    padding : 0 10px;
-    width: 100vw;
-}
 
 .taskList{
     display: grid;
     width: 100%;
+    gap : 20px;
+}
+
+.alert{
+    fill : #000;
+    height : 40px;
 }
 
 .alert--high{
     fill : orange;
-    height : 40px;
 }
 
 .alert--veryhigh{
     fill : red;
-    height : 40px;
+}
+.alert--low{
+    fill : rgb(35, 112, 255);
+}
+.alert--verylow{
+    fill : green;
 }
 
+.taskComponent{
+    display: grid;
+    grid-template-columns: 35% auto;
+    padding : 0 10px;
+    width: 100vw;
+}
 
 .taskLeftDiv{
     display: flex;

@@ -4,7 +4,7 @@ import Selector from '../../Components/Selector/Selector';
 import { addTaskToStorage, Task, TaskPriority } from '../../Components/Task/Task';
 import './TasksStyles.scss';
 
-function mapPriority(level: number) {
+export function mapPriority(level: number) {
     if (level === 1) {
         return TaskPriority['VERY LOW'];
     } else if (level === 2) {

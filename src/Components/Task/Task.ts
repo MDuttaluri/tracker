@@ -24,6 +24,7 @@ export class Task {
             this._description = obj._description
             this._priority = obj._priority
             this._isCompleted = obj._isCompleted
+            this._range = obj._range
         }
     }
 
@@ -60,7 +61,9 @@ export class Task {
     }
 
     public logTask() {
-        console.log(`TASK_ID : ${this._taskId} \n TASK NAME : ${this._name} \n TASK DESC : ${this._description} \n TASK PRIORITY : ${this._priority}`);
+        //console.log(`TASK_ID : ${this._taskId} \n TASK NAME : ${this._name} \n TASK DESC : ${this._description} \n TASK PRIORITY : ${this._priority}\n TASK STRT : ${this._range._startFrom}`);
+        console.log(this);
+
     }
 
     public getTaskJSON: any = () => {

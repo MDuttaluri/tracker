@@ -19,10 +19,11 @@ function getPriorityColor(level: number) {
 
 interface SelectorPropsInterface {
     setterFn: any;
+    initLevel?: number;
 }
 
 function Selector(props: SelectorPropsInterface) {
-    const [level, setLevel] = useState(0);
+    const [level, setLevel] = useState(props.initLevel || 0);
 
     useEffect(() => {
         if (props.setterFn) {
@@ -35,7 +36,7 @@ function Selector(props: SelectorPropsInterface) {
     function renderItems() {
         let items = []
         for (let i = 0; i < maxLevel; i++) {
-            items.push(<div onClick={() => {
+            items.push(<div key={'selectorDiv' + i} onClick={() => {
                 if (i < level)
                     setLevel(level + 1)
                 else
@@ -46,17 +47,19 @@ function Selector(props: SelectorPropsInterface) {
     }
 
     return <div className='selector'>
-        <UpArrowIcon onClick={() => {
-            if (level < maxLevel) {
-                setLevel(level + 1)
+        <DownArrowIcon onClick={() => {
+            if (level > 0) {
+                setLevel(level - 1)
             }
         }} className='arrowIcon' />
         {
             renderItems()
         }
-        <DownArrowIcon onClick={() => {
-            if (level > 0) {
-                setLevel(level - 1)
+
+
+        <UpArrowIcon onClick={() => {
+            if (level < maxLevel) {
+                setLevel(level + 1)
             }
         }} className='arrowIcon' />
     </div>;

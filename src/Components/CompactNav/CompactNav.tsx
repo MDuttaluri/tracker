@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import './CompactNav.scss';
 import { ReactComponent as BackIcon } from '../../assets/back-icon.svg';
 import { NavLink } from 'react-router-dom';
@@ -17,13 +16,6 @@ interface CompactNavPropsInterface {
 
 
 function CompactNav(props: CompactNavPropsInterface) {
-
-    useEffect(() => {
-        console.log(`compact nav : ${props.extraLink}`);
-        console.log(props.extraLink);
-
-
-    }, [])
 
     return <div className='compactNav'>
         <NavLink to={props.backTo} className='CompactNav--link'><BackIcon className='icon' /></NavLink>

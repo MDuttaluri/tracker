@@ -6,6 +6,8 @@ import './TasksStyles.scss';
 import { NavLink } from 'react-router-dom';
 import { ReactComponent as AddTaskIcon } from '../../assets/addTask.svg';
 import { ReactComponent as AlertIcon } from '../../assets/alert.svg';
+import { ReactComponent as EditIcon } from '../../assets/edit.svg';
+import { TasksList } from '../../Components/TasksList/TaskList';
 
 
 export function loadTasks(setTasks: any) {
@@ -54,39 +56,6 @@ function CreateNewDialog() {
     </div>
 }
 
-interface TasksListPropsInterface {
-    tasks: any;
-}
-
-export function TasksList(props: TasksListPropsInterface) {
-    const [tasks, setTasks] = useState<Task[]>([]);
-
-    useEffect(() => {
-        let tempTasks = [] as Task[]
-        console.log(props.tasks);
-
-        Object.keys(props.tasks).map((taskId) => {
-            console.log(`key : ${taskId}`);
-
-            if (taskId != 'tasksCount') {
-                const newTaskObj = new Task()
-                newTaskObj.cloneFromJSON(props.tasks[taskId])
-                tempTasks.push(newTaskObj)
-            }
-        })
-        setTasks([...tempTasks]);
-    }, [])
-
-    return (
-        <div className='outerDiv grid--center taskList'>
-            {tasks.length > 0 && tasks.map((val, idx) => {
-                console.log(`Task comp created`);
-                return <TaskComponent key={'taskComp' + idx} task={val} />
-            })}
-        </div>
-
-    )
-}
 
 interface TaskComponentPropsInterface {
     task: Task;
@@ -97,24 +66,30 @@ export function TaskComponent(props: TaskComponentPropsInterface) {
     const [alertBadge, setAlertBadge] = useState(<></>);
     useEffect(() => {
         if (task.priority === TaskPriority.HIGH) {
-            setAlertBadge(<AlertIcon className='alert--high' />)
+            setAlertBadge(<AlertIcon className={'alert alert--high'} />)
         } else if (task.priority === TaskPriority['VERY HIGH']) {
-            setAlertBadge(<AlertIcon className='alert--veryhigh' />)
+            setAlertBadge(<AlertIcon className='alert alert--veryhigh' />)
+        } else if (task.priority === TaskPriority.NORMAL) {
+            setAlertBadge(<AlertIcon className='alert alert--normal' />)
+        } else if (task.priority === TaskPriority.LOW) {
+            setAlertBadge(<AlertIcon className='alert alert--low' />)
+        } else if (task.priority === TaskPriority['VERY LOW']) {
+            setAlertBadge(<AlertIcon className='alert alert--veryhigh' />)
         }
     }, [])
     return (
-        <div className='taskComponent'>
+        <NavLink id={task.taskId} to={'/editTask/' + task.taskId}><div className='taskComponent'>
             <div className='taskLeftDiv'>
                 <p>{task.name}</p>
                 <p>{alertBadge}</p>
             </div>
             <div className='taskRightDiv'>
                 <p>{task.description}</p>
-                <p>{task.range._startFrom}</p>
-                <p>{task.range._endAt}</p>
+
                 <p>{task.priority}</p>
             </div>
         </div>
+        </NavLink>
     )
 }
 

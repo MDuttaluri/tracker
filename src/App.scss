@@ -79,8 +79,7 @@ background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);    display: flex;
 
 .form{
     display: grid;
-    row-gap : 10px;
-
+    row-gap : 20px;
     &>.formRow{
         display: flex;
         justify-content: space-between;
@@ -99,5 +98,8 @@ background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);    display: flex;
         }
 
 
+    }
+    &> button{
+        margin-top : 20px;
     }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -6,17 +6,13 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TasksHome from './Pages/Tasks/TasksHome';
 import CreateTask from './Pages/Tasks/CreateTask';
+import EditTask from './Pages/Tasks/EditTask';
+
 
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/tasks" element={<TasksHome />} />
-        <Route path="/createTask" element={<CreateTask />} />
-      </Routes>
-    </BrowserRouter>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
