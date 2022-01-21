@@ -4,13 +4,27 @@ export class Task {
     private _description: string;
     private _priority: TaskPriority;
     private _isCompleted: boolean;
+    private _range: TaskRange;
 
-    constructor(name: string, description: string, priority: TaskPriority, isCompleted?: boolean) {
-        this._taskId = Date.now() + name
-        this._name = name
-        this._description = description
-        this._priority = priority
+    constructor(name?: string, description?: string, priority?: TaskPriority, isCompleted?: boolean, range?: TaskRange) {
+        this._taskId = Date.now() + (name || "")
+        this._name = name || "No name given"
+        this._description = description || "No description available"
+        this._priority = priority || TaskPriority["VERY LOW"]
         this._isCompleted = isCompleted ?? false
+        this._range = range || { _startFrom: "", _endAt: "", _isRecurring: false }
+    }
+
+    public cloneFromJSON(obj: any) {
+        console.log(obj);
+
+        if (obj) {
+            this._taskId = obj._taskId
+            this._name = obj._name
+            this._description = obj._description
+            this._priority = obj._priority
+            this._isCompleted = obj._isCompleted
+        }
     }
 
     public get taskId() {
@@ -25,6 +39,9 @@ export class Task {
     public get priority() {
         return this._priority
     }
+    public get range() {
+        return this._range
+    }
 
     public set taskId(taskId: string) {
         this._taskId = taskId;
@@ -38,12 +55,15 @@ export class Task {
     public set priority(priority: TaskPriority) {
         this._priority = priority
     }
-
-    public logTask() {
-        console.log(`TASK_ID : ${this._name} \n TASK NAME : ${this._name} \n TASK DESC : ${this._description} \n TASK PRIORITY : ${this._priority}`);
+    public set range(range: TaskRange) {
+        this._range = range
     }
 
-    public getTaskJSON() {
+    public logTask() {
+        console.log(`TASK_ID : ${this._taskId} \n TASK NAME : ${this._name} \n TASK DESC : ${this._description} \n TASK PRIORITY : ${this._priority}`);
+    }
+
+    public getTaskJSON: any = () => {
         return {
             id: this._taskId,
             name: this._name,
@@ -53,15 +73,46 @@ export class Task {
         }
     }
 
+
 }
 
-interface TaskRange {
+export interface TaskRange {
     _startFrom: string;
     _endAt: string;
     _isRecurring: boolean;
 }
 
 
-enum TaskPriority {
+export enum TaskPriority {
     'VERY HIGH', 'HIGH', 'NORMAL', 'LOW', 'VERY LOW'
+}
+
+export function getTasksCount() {
+    const tasksCount = localStorage.getItem('tasksCount')
+    if (tasksCount == null) {
+        localStorage.setItem('tasksCount', "0")
+        return 0
+    } else {
+        return Number(tasksCount)
+    }
+}
+
+export function setTasksCount(newCount: number) {
+    localStorage.setItem('tasksCount', newCount + "")
+}
+
+
+export function addTaskToStorage(task: Task) {
+    const storedTasks = localStorage.getItem('tasks');
+    let updatedTasks = <any>{}
+    if (storedTasks != null) {
+        const storedTasksJSON = JSON.parse(storedTasks)
+        updatedTasks = { ...storedTasksJSON, tasksCount: storedTasksJSON?.tasksCount + 1 }
+        updatedTasks[task.taskId] = task;
+    } else {
+        updatedTasks[task.taskId] = task;
+        updatedTasks['tasksCount'] = 1;
+    }
+    setTasksCount(updatedTasks.tasksCount);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks))
 }

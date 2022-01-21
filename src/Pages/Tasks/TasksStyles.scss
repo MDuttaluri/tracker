@@ -8,3 +8,40 @@
         height: 100px;
     }
 }
+
+
+.taskComponent{
+    display: flex;
+    padding : 0 10px;
+    width: 100vw;
+}
+
+.taskList{
+    display: grid;
+    width: 100%;
+}
+
+.alert--high{
+    fill : orange;
+    height : 40px;
+}
+
+.alert--veryhigh{
+    fill : red;
+    height : 40px;
+}
+
+
+.taskLeftDiv{
+    display: flex;
+    flex-direction: column;
+    gap : 0;
+    justify-content: center;
+    align-items: center;
+    border-right: solid 1px rgba(197, 197, 197, 0.815);
+    padding-right : 10px;
+}
+
+.taskRightDiv{
+    padding-left : 10px;
+}

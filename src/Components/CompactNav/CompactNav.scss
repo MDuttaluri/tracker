@@ -1,13 +1,18 @@
 .compactNav{
-    display: grid;
+    display: flex;
     min-height: 30px;
     padding : 10px;
-    grid-template-columns: 30% 70%;
     align-items: center;
-   
+    justify-content: space-between;
+    flex-grow: 0.0001;
+    transition: all 2s ease;
+    &>.CompactNav--link{
+        flex-grow: 1;
+    }
     &>p{
         font-size: large;
         font-weight: 600;
+        justify-items: left;
+        flex-grow: 1;
     }
-    
 }
