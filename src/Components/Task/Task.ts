@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export class Task {
     private _taskId: string;
     private _name: string;
@@ -24,7 +26,11 @@ export class Task {
             this._description = obj.description
             this._priority = obj.priority
             this._isCompleted = obj.isCompleted
-            this._range = obj.range
+            this._range = {
+                _startFrom: obj.range?.startFrom || "",
+                _endAt: obj.range?.endAt || "",
+                _isRecurring: obj.range?.isRecurring || ""
+            }
         } else {
             console.log(`skip aindhi andoi!`);
 
@@ -79,7 +85,12 @@ export class Task {
             name: this._name,
             description: this._description,
             priority: this._priority,
-            isCompleted: this._isCompleted
+            isCompleted: this._isCompleted,
+            range: {
+                startFrom: this._range._startFrom,
+                endAt: this._range._endAt,
+                isRecurring: this._range._isRecurring,
+            }
         }
     }
 
@@ -112,12 +123,12 @@ export function setTasksCount(newCount: number) {
 }
 
 
-export function addTaskToStorage(task: any) {
+export function addTaskToStorage(task: any, edit?: boolean) {
     const storedTasks = localStorage.getItem('tasks');
     let updatedTasks = <any>{}
     if (storedTasks != null) {
         const storedTasksJSON = JSON.parse(storedTasks)
-        updatedTasks = { ...storedTasksJSON, tasksCount: storedTasksJSON?.tasksCount + 1 }
+        updatedTasks = { ...storedTasksJSON, tasksCount: storedTasksJSON?.tasksCount + (edit ? 0 : 1) }
         updatedTasks[task.taskId] = task;
     } else {
         updatedTasks[task.taskId] = task;
@@ -125,4 +136,38 @@ export function addTaskToStorage(task: any) {
     }
     setTasksCount(updatedTasks.tasksCount);
     localStorage.setItem('tasks', JSON.stringify(updatedTasks))
+}
+
+export enum TimeType {
+    'DAYS' = 'days', 'MONTHS' = 'monts', 'YEARS' = 'years'
+}
+
+export function getTime(startAt: any, endAt: any, type: TimeType) {
+
+    return moment(endAt).diff(startAt, type as any)
+
+}
+
+
+export function deleteTaskFromStorage(taskId: string) {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks != null) {
+        let tasksJSON = JSON.parse(storedTasks);
+        delete tasksJSON[taskId];
+        tasksJSON['tasksCount'] = tasksJSON['tasksCount'] - 1;
+        localStorage.setItem('tasks', JSON.stringify(tasksJSON))
+    }
+    const localCount = localStorage.getItem("tasksCount");
+    if (localCount != null)
+        localStorage.setItem("tasksCount", (parseInt(localCount) - 1) + "")
+    else
+        localStorage.setItem("tasksCount", "0")
+}
+
+
+export interface AlertInterface {
+    message: string,
+    primaryAction: string,
+    secondaryAction: string,
+    callbackSetter?: any
 }

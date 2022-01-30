@@ -5,6 +5,8 @@ import Selector from '../../Components/Selector/Selector';
 import { addTaskToStorage, Task, TaskPriority } from '../../Components/Task/Task';
 import './TasksStyles.scss';
 
+import { useNavigate } from "react-router-dom"
+
 export function mapPriority(level: number) {
     if (level === 1) {
         return TaskPriority['VERY LOW'];
@@ -20,6 +22,8 @@ export function mapPriority(level: number) {
 }
 
 function CreateTask() {
+    let navigate = useNavigate();
+
     const [taskData, setTaskData] = useContext(TaskDataContext);
     const nameRef = useRef<HTMLInputElement>(null);
     const startDateRef = useRef<HTMLInputElement>(null);
@@ -29,12 +33,13 @@ function CreateTask() {
 
     function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         e.preventDefault();
-        const newTask = new Task(nameRef.current?.value ?? "Task Name empty", descriptionRef.current?.value, mapPriority(priorityValue), false)
+        const newTask = new Task(nameRef.current?.value ?? "Task Name empty", descriptionRef.current?.value, mapPriority(priorityValue), false, { _startFrom: startDateRef.current?.value || "", _endAt: endDateRef.current?.value || "", _isRecurring: false })
         //newTask.logTask();
         addTaskToStorage(newTask.getTaskJSON())
         let modifiedState = { ...taskData };
         modifiedState[newTask.taskId] = newTask.getTaskJSON();
         setTaskData(modifiedState);
+        navigate('/tasks');
     }
 
     return <div>

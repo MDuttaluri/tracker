@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { TaskDataContext } from '../../App';
 import CompactNav from '../../Components/CompactNav/CompactNav';
 import Selector from '../../Components/Selector/Selector';
-import { addTaskToStorage, Task } from '../../Components/Task/Task';
+import { addTaskToStorage, deleteTaskFromStorage, Task } from '../../Components/Task/Task';
 import { mapPriority } from './CreateTask';
 
 function EditTask() {
@@ -16,6 +16,7 @@ function EditTask() {
     const [taskData, setTaskData] = useContext(TaskDataContext);
     const [isLoading, setIsLoading] = useState(true);
     const [selector, setSelector] = useState(<></>);
+    const navigate = useNavigate();
     let task = new Task();
 
     function saveTask(e: any) {
@@ -32,13 +33,23 @@ function EditTask() {
         }
         console.log(`logging task now`);
         task.logTask();
-        addTaskToStorage(task);
+        addTaskToStorage(task.getTaskJSON(), true);
         console.log(taskData);
         let modifiedState = { ...taskData }
         modifiedState[taskId] = task.getTaskJSON();
         console.log(modifiedState);
 
         setTaskData(modifiedState)
+        navigate('/tasks');
+    }
+
+    function deleteTask() {
+        deleteTaskFromStorage(taskId);
+        let oldData = taskData;
+        delete oldData[taskId];
+        oldData['tasksCount'] = oldData['tasksCount'] - 1;
+        setTaskData(oldData);
+        navigate('/tasks')
     }
 
     useEffect(() => {
@@ -93,6 +104,7 @@ function EditTask() {
                         {selector}
                     </div>
                     <button type='submit' onClick={saveTask} className='primaryButton'>Save</button>
+                    <p onClick={deleteTask} style={{ textAlign: 'center', color: "red" }}>Delete Task</p>
                 </form>
             </div>
         </div>

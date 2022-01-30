@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import CompactNav from '../../Components/CompactNav/CompactNav';
-import { getTasksCount, Task, TaskPriority } from '../../Components/Task/Task';
+import { getTasksCount, getTime, Task, TaskPriority, TimeType } from '../../Components/Task/Task';
 import { ReactComponent as NewTaskIcon } from '../../assets/createTask.svg';
 import './TasksStyles.scss';
 import { NavLink } from 'react-router-dom';
@@ -8,7 +8,8 @@ import { ReactComponent as AddTaskIcon } from '../../assets/addTask.svg';
 import { ReactComponent as AlertIcon } from '../../assets/alert.svg';
 import { ReactComponent as EditIcon } from '../../assets/edit.svg';
 import { TasksList } from '../../Components/TasksList/TaskList';
-
+import moment from 'moment';
+import { AlertContext } from '../../App';
 
 export function loadTasks(setTasks: any) {
     const storedTasks = localStorage.getItem('tasks')
@@ -64,6 +65,8 @@ interface TaskComponentPropsInterface {
 export function TaskComponent(props: TaskComponentPropsInterface) {
     const [task, setTask] = useState<Task>(props.task);
     const [alertBadge, setAlertBadge] = useState(<></>);
+    const [alertData, setAlertData] = useContext(AlertContext);
+
     useEffect(() => {
         if (task.priority === TaskPriority.HIGH) {
             setAlertBadge(<AlertIcon className={'alert alert--high'} />)
@@ -80,13 +83,24 @@ export function TaskComponent(props: TaskComponentPropsInterface) {
     return (
         <NavLink id={task.taskId} to={'/editTask/' + task.taskId}><div className='taskComponent'>
             <div className='taskLeftDiv'>
-                <p>{task.name}</p>
+                <p style={{ fontWeight: "600" }}>{task.name}</p>
                 <p>{alertBadge}</p>
+                <button className='primaryButton' onClick={(e) => {
+                    e.preventDefault();
+                    setAlertData({
+                        message: 'hi!',
+                        primaryAction: 'string',
+                        secondaryAction: 'string'
+                    })
+
+                }} style={{ height: "fit-content", padding: '5px', marginLeft: '5px' }}>Mark as Completed</button>
             </div>
             <div className='taskRightDiv'>
+                <EditIcon className='taskEditIcon' height={'20px'} />
                 <p>{task.description}</p>
-
-                <p>{task.priority}</p>
+                <p><span style={{ fontWeight: '600' }}>Starting from </span>: {task.range._startFrom}</p>
+                <p><span style={{ fontWeight: '600' }}>Ends on</span> : {task.range._endAt}</p>
+                <p><span style={{ fontWeight: '600' }}>{getTime(task.range._startFrom, task.range._endAt, TimeType.DAYS)}</span> Days to go.</p>
             </div>
         </div>
         </NavLink>
