@@ -59,6 +59,17 @@ background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);    display: flex;
     cursor: pointer;
 }
 
+.secondaryButton{
+    background-color: #fff;
+    height : 40px;
+    border :rgb(0, 0, 0) 1px solid;
+    padding : 10px;
+    color : #000;
+    border-radius: 5px;
+    cursor: pointer;
+    
+}
+
 .outerDiv{
     padding : 10px;
 }
@@ -83,7 +94,6 @@ background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);    display: flex;
     &>.formRow{
         display: flex;
         justify-content: space-between;
-        
         align-items: center;
         width: 90vw;
 
@@ -102,4 +112,26 @@ background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);    display: flex;
     &> button{
         margin-top : 20px;
     }
+}
+
+.alertBanner{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 30px;
+   
+    box-shadow: 2px 2px 2px 2px rgba(117, 117, 117, 0.582);
+    background-color: #fff;
+    z-index: 10000;
+    padding : 10px;
+    border-radius: 10px;
+    margin : 10px;
+    position: sticky;
+    top : 0;
+   
+}
+
+.underline{
+    text-decoration: underline 2px rgb(35, 112, 255);
+    text-underline-offset: 4px;
 }

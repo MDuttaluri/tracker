@@ -1,4 +1,5 @@
 import moment from "moment";
+import { AlertTheme } from "../../Utilities";
 
 export class Task {
     private _taskId: string;
@@ -167,7 +168,6 @@ export function deleteTaskFromStorage(taskId: string) {
 
 export interface AlertInterface {
     message: string,
-    primaryAction: string,
-    secondaryAction: string,
+    theme: AlertTheme,
     callbackSetter?: any
 }
