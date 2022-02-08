@@ -1,3 +1,7 @@
+*{
+    user-select: none;
+}
+
 a{
     text-decoration: none;
     color: #000;
@@ -135,3 +139,13 @@ background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);    display: flex;
     text-decoration: underline 2px rgb(35, 112, 255);
     text-underline-offset: 4px;
 }
+
+
+
+// @media screen and (min-width : 750px) {
+//     .outerDiv{
+//         width: fit-content;
+//         justify-self: center;
+//         justify-items: center;
+//     }
+// }

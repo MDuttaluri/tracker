@@ -16,6 +16,7 @@ function Signup() {
     const finalFormDivRef = useRef<HTMLDivElement>(null);
     const mailIdRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
+    const nameRef = useRef<HTMLInputElement>(null);
     const passwordConfirmationRef = useRef<HTMLInputElement>(null);
     const [errorCode, setErrorCode] = useState([]);
     const [alertData, setAlertData] = useContext(AlertContext);
@@ -62,6 +63,12 @@ function Signup() {
 
 
     }
+
+    function formFinalSave(e: any) {
+        e.preventDefault();
+
+    }
+
 
     function startFormTransition() {
         initFormDivRef?.current?.style.setProperty("animation", "fadeOut ease forwards " + FADE_TRANSITION_DELAY_MS + "ms")
@@ -114,7 +121,7 @@ function Signup() {
                     <h1 style={{ textAlign: "center" }}>Finish setting up your account</h1>
                     <div className='formRow'>
                         <label>Name : </label>
-                        <input type="text" />
+                        <input type="text" ref={nameRef} />
                     </div>
                     <div className='formRow' style={{ justifyContent: "left", columnGap: "25px" }}>
                         <span>Email Verification : </span>
@@ -137,8 +144,7 @@ function Signup() {
                                 </div>}</span>
                     </div>
 
-                    <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="/login">Looking to login?</NavLink>
-                    <button className='primaryButton' onClick={validateForm}>Save</button>
+                    <button className='primaryButton' onClick={formFinalSave}>Save</button>
                 </form>
             </div>
         </div>

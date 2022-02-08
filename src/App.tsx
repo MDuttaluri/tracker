@@ -15,6 +15,31 @@ import { AlertTheme, LoadInitialAuthData, UserDataContextInterface, UserDataInte
 
 initaliseFirebase();
 
+function lol(status: any) {
+  alert(status)
+}
+
+
+try {
+
+  Notification.requestPermission((status) => {
+    if (status == 'granted') {
+      navigator.serviceWorker.getRegistration()
+        .then((reg) => {
+          reg?.showNotification("Notifications will show up like this from now on.", { data: "This is the data part.", badge: "badge", requireInteraction: true })
+        })
+    }
+  })
+
+
+} catch (e) {
+  try {
+    Notification.requestPermission(lol)
+  } catch (e) {
+    alert('error')
+  }
+}
+
 
 function loadTaskData(setTaskData?: any) {
   getTasksCount();
@@ -54,6 +79,7 @@ function App() {
       }
     })
     loadTaskData(setTaskData)
+
   }, [])
 
   useEffect(() => {

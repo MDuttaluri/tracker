@@ -18,3 +18,20 @@
     display: flex;
     align-items: center;
 }
+
+
+@media screen and (min-width : 750px) {
+    .tilesContainer{
+        grid-template-columns: auto auto;
+        justify-content: center;
+        column-gap: 25px;
+    }
+    .tile{
+        height: 100px;
+        width: 300px;
+        transition: box-shadow 0.2s;
+        &:hover{
+            box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.329);
+        }
+    }
+}

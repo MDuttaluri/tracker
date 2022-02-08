@@ -61,3 +61,11 @@
     float: right;
     margin-right : 10px;
 }
+
+
+@media screen and (min-width: 750px) {
+    .createNewTaskDialog{
+        margin-top: 1rem;
+    }
+    
+}
