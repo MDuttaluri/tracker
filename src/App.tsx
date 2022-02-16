@@ -1,6 +1,6 @@
-import { getAuth, User } from 'firebase/auth';
-import React, { createContext, useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Auth, getAuth, signOut, User } from 'firebase/auth';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import './App.scss';
 import Calculator from './Components/Calculator/Calculator';
 import { AlertInterface, getTasksCount } from './Components/Task/Task';
@@ -126,9 +126,28 @@ function App() {
 
 
 function HomeScreen() {
+
+  const { userData, setUserData } = useContext(UserContext);
+
+  let auth: Auth;
+
+  useEffect(() => {
+    auth = getAuth();
+  }, [])
+
+
   return (
     <div className='landingOuter'>
       <div className='Jumbotron'>
+        {userData.name == "Guest" && <NavLink className={'userItem'} to='/login'>Login / Signup</NavLink>}
+        {userData.name != "Guest" && <p className={'userItem'} onClick={() => {
+          alert(`pl`)
+          if (auth?.currentUser?.email) {
+            signOut(auth).then((lol) => {
+              setUserData({ ...userData, message: "Guest" })
+            })
+          }
+        }}>Sign out</p>}
         <h1>TraQ.it</h1>
       </div>
       <TilesContainer />

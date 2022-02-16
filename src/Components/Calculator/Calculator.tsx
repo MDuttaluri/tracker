@@ -15,7 +15,7 @@ function Calculator() {
 }
 
 enum CalculatorMove {
-    'ADD', 'MULTIPLY', 'SUBTRACT', 'DIVIDE', 'MODULO'
+    'ADD', 'MULTIPLY', 'SUBTRACT', 'DIVIDE', 'MODULO', 'EQUALS'
 }
 
 const CalculatorMoveMapper: any = {
@@ -37,8 +37,9 @@ function getCalcSymbol(type: CalculatorMove) {
         return "*"
     } else if (type == CalculatorMove.MODULO) {
         return "%"
+    } else {
+        return "=";
     }
-    return ""
 }
 
 function CalculatorComponent() {
@@ -103,10 +104,10 @@ function CalculatorComponent() {
         let buttons = [
             <button key={'calcPadButton('} className='calcPadButton' onClick={() => { addToInput("(") }}>(</button>,
             <button key={'calcPadButton)'} className='calcPadButton' onClick={() => { addToInput(")") }}>)</button>,
-            <button key={'calcPadButtonClear'} className='calcPadButton' onClick={() => { setCalcScreenContent(""); setCalcScreenOldContent("") }}>C</button>,
-            <button key={'calcPadButton*'} className='calcPadButton'>*</button>,
-            <button key={'calcPadButton/'} className='calcPadButton'>/</button>,
-            <button key={'calcPadButton%'} className='calcPadButton'>%</button>
+            <button key={'calcPadButtonClear'} className='calcPadButton' onClick={() => { setCalcScreenContent(""); setCalcScreenOldContent(""); setNextOperator("") }}>C</button>,
+            <button key={'calcPadButton*'} onClick={() => { operationStarted(CalculatorMove.MULTIPLY) }} className='calcPadButton'>*</button>,
+            <button key={'calcPadButton/'} onClick={() => { operationStarted(CalculatorMove.DIVIDE) }} className='calcPadButton'>/</button>,
+            <button key={'calcPadButton%'} onClick={() => { operationStarted(CalculatorMove.MODULO) }} className='calcPadButton'>%</button>
         ];
 
         let nextKeyVal = 9
@@ -127,13 +128,51 @@ function CalculatorComponent() {
     }
 
 
+    function operationStarted(type: CalculatorMove) {
+
+
+        if (calcScreenContent == "")
+            return;
+        let newVal;
+        if (calcScreenOldContent == "") {
+            newVal = calcScreenContent;
+        } else {
+            newVal = performOperation();
+        }
+        setCalcScreenOldContent(newVal + "");
+        setCalcScreenContent("");
+        setNextOperator(getCalcSymbol(type));
+    }
+
+    function performOperation() {
+        const currentVal = parseFloat(calcScreenContent || "0")
+        const oldVal = parseFloat(calcScreenOldContent || "0")
+        if (nextOperator == "+") {
+            return currentVal + oldVal;
+        } else if (nextOperator == "-") {
+            return oldVal - currentVal;
+        } else if (nextOperator == "*") {
+            return currentVal * oldVal;
+        } else if (nextOperator == "/") {
+            if (currentVal == 0) {
+                return null;
+            }
+            return currentVal / oldVal;
+        } else if (nextOperator == "%") {
+            return currentVal % oldVal;
+        } else if (nextOperator == "=") {
+
+        }
+    }
+
+
 
     return (
         <div className='calcOuter'>
             <div className='calcScreen'>
                 <div className='calcScreenNewContent'>
                     <input disabled className='calcScreenInput' ref={calcScreenOldValRef} />
-                    <span>{nextOperator}</span>
+                    <span className='calcNextOperator'>{nextOperator}</span>
                 </div>
                 <div className='calcScreenNewContent'>
                     <input className='calcScreenInput' disabled ref={calcScreenRef} onChange={(e) => { setCalcScreenContent(e.target.value) }} />
@@ -145,13 +184,13 @@ function CalculatorComponent() {
                     {getButtons()}
                 </div>
                 <div className='calcRightOps'>
-                    <button className='calcPadButton' onClick={() => { operationHandler(CalculatorMove.ADD) }}>
+                    <button className='calcPadButton' onClick={() => { operationStarted(CalculatorMove.ADD) }}>
                         +
                     </button>
-                    <button className='calcPadButton' onClick={() => { operationHandler(CalculatorMove.SUBTRACT) }}>
+                    <button className='calcPadButton' onClick={() => { operationStarted(CalculatorMove.SUBTRACT) }}>
                         -
                     </button>
-                    <button className='calcPadButton' >
+                    <button className='calcPadButton' onClick={() => { operationStarted(CalculatorMove.EQUALS) }} >
                         =
                     </button>
                 </div>

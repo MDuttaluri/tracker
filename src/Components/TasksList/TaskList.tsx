@@ -12,11 +12,6 @@ export function TasksList(props: TasksListPropsInterface) {
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
-        console.warn("ok now context updated"); console.warn(taskData);
-    }, [taskData])
-
-
-    useEffect(() => {
         if (taskData) {
             console.log(taskData);
 
@@ -35,11 +30,6 @@ export function TasksList(props: TasksListPropsInterface) {
         }
     }, [taskData])
 
-    useEffect(() => {
-        console.log(`tasks list updated!!!!!!!!!!!!!!!!`);
-        console.log(tasks);
-        console.log(taskData);
-    }, [tasks])
 
     return (
         <div className='outerDiv grid--center taskList'>

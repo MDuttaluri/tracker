@@ -15,8 +15,8 @@ function Login() {
     const { userData, setUserData } = useContext(UserContext);
     const [alertData, setAlertData] = useContext(AlertContext);
     const [isLoading, setIsLoading] = useState(false);
+    const [isAlreadyLoggedIn, setIsAlreadyLoggedIn] = useState(false);
     const navigate = useNavigate();
-
 
 
     function loginHandler(e: any) {
@@ -42,13 +42,26 @@ function Login() {
 
     useEffect(() => {
         auth = getAuth();
+        auth.onAuthStateChanged((user: User | null) => {
+
+            if (user?.email) {
+                console.log(`yup theres a user`);
+
+                setIsAlreadyLoggedIn(true);
+                //navigate("/")
+            }
+
+
+        })
     }, [])
 
 
 
     return <div>
+
         {isLoading && <Loading fullDiv={true} />}
         <CompactNav backTo='/' content='Login' extraLink={{ label: userData?.name, link: "#" }} />
+        {isAlreadyLoggedIn && <AlreadyLoggedInDialog userMailId={userData?.name || ""} />}
         <form className='form authenticationForm'>
 
             <h1 style={{ textAlign: "center" }}>Login</h1>
@@ -66,7 +79,49 @@ function Login() {
     </div>;
 }
 
+interface AlreadyLoggedInDialogPropsType {
+    userMailId: string
+}
 
+function AlreadyLoggedInDialog(props: AlreadyLoggedInDialogPropsType) {
+    const [progressValue, setProgressValue] = useState(0);
+    const navigate = useNavigate();
+
+    let localProgressVal = 0;
+    let progressInterval: any;
+
+    useEffect(() => {
+        progressInterval = setInterval(() => {
+            console.log(`interval`);
+
+            if (localProgressVal < 100)
+                localProgressVal += 20;
+            setProgressValue(localProgressVal)
+        }, 1000)
+
+        return () => {
+            clearInterval(progressInterval)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (progressValue >= 100) {
+            clearInterval(progressInterval);
+
+            // navigate("/")
+        }
+    }, [progressValue])
+
+    return (
+        <div className='alreadyLoggedIn'>
+            <p>You are already logged in as <span style={{ color: 'rgb(35, 112, 255)' }}>{props.userMailId}</span> .</p>
+            <p>You will now be re-directed to the home page.</p>
+            <div className='progress'>
+                <div className='progressInner' style={{ width: `${progressValue}%` }}></div>
+            </div>
+        </div>
+    );
+}
 
 
 export default Login;
