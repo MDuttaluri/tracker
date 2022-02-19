@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './SelectorStyles.scss';
 import { ReactComponent as UpArrowIcon } from '../../assets/upArrow.svg';
 import { ReactComponent as DownArrowIcon } from '../../assets/downArrow.svg';
+import { AppThemeContext } from '../../App';
+import { AppThemeType } from '../../ThemeUtils';
 
 function getPriorityColor(level: number) {
     if (level === 1) {
@@ -22,8 +24,26 @@ interface SelectorPropsInterface {
     initLevel?: number;
 }
 
+
+function getUnselectedCellColor(level: number, currentIdx: number, themeSelected: AppThemeType) {
+    if (currentIdx < level) {
+        return { backgroundColor: getPriorityColor(level) };
+    }
+    if (themeSelected === AppThemeType.DARK) {
+        return {
+            backgroundColor: "#000",
+            border: "solid 1px rgb(35, 112, 255)"
+        }
+    } else {
+        return {
+            backgroundColor: "#fff"
+        }
+    }
+}
+
 function Selector(props: SelectorPropsInterface) {
     const [level, setLevel] = useState(props.initLevel || 0);
+    const { themeMode, setThemeMode } = useContext(AppThemeContext);
 
     useEffect(() => {
         if (props.setterFn) {
@@ -36,7 +56,7 @@ function Selector(props: SelectorPropsInterface) {
     function renderItems() {
         let items = []
         for (let i = 0; i < maxLevel; i++) {
-            items.push(<div key={'selectorDiv' + i} className={'level--' + (i < level ? 'selected' : 'unselected')} style={{ backgroundColor: (i < level ? getPriorityColor(level) : "#fff") }} />)
+            items.push(<div key={'selectorDiv' + i} className={'level--' + (i < level ? 'selected' : 'unselected')} style={{ ...getUnselectedCellColor(level, i, themeMode) }} />)
         }
         return items;
     }

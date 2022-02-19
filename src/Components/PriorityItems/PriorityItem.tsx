@@ -4,6 +4,9 @@ import { getTime, TaskPriority, TimeType } from '../Task/Task';
 import { ReactComponent as AlertIcon } from '../../assets/alert.svg';
 import { ReactComponent as EditIcon } from '../../assets/edit.svg';
 import moment from 'moment';
+import useThemeData from '../hooks/useThemeData';
+import { ThemeDataType } from '../../ThemeUtils';
+import useSpecificThemeData from '../hooks/useSpecificThemeData';
 
 
 interface PriorityItemPropsType {
@@ -22,12 +25,14 @@ export interface PriorityItemType {
 
 function PriorityItem(props: PriorityItemPropsType) {
     const priorityItem = props.priorityItem;
+    const themeData = useThemeData()[0];
+    const specificThemeData = useSpecificThemeData()[0];
 
 
 
     return (
         <NavLink id={priorityItem.itemId} to={'/editPriorityItem/' + priorityItem.itemId}>
-            <div className='priorityItem' >
+            <div className='priorityItem' style={specificThemeData as ThemeDataType}>
                 <div className='taskLeftDiv' >
                     <p style={{ fontWeight: "600" }}>{priorityItem.itemName}</p>
                     {

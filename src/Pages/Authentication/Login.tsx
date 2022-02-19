@@ -62,21 +62,23 @@ function Login() {
         {isLoading && <Loading fullDiv={true} />}
         <CompactNav backTo='/' content='Login' extraLink={{ label: userData?.name, link: "#" }} />
         {isAlreadyLoggedIn && <AlreadyLoggedInDialog userMailId={userData?.name || ""} />}
-        <form className='form authenticationForm'>
+        {!isAlreadyLoggedIn &&
+            <form className='form authenticationForm'>
 
-            <h1 style={{ textAlign: "center" }}>Login</h1>
-            <div className='formRow'>
-                <label>Username : </label>
-                <input type="text" ref={usernameRef} />
-            </div>
-            <div className='formRow'>
-                <label>Password : </label>
-                <input type="password" ref={passwordRef} />
-            </div>
-            <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="#">Forgot password?</NavLink>
-            <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="/signup">Looking to signup?</NavLink>
-            <button onClick={loginHandler} className='primaryButton'>Go!</button>
-        </form>
+                <h1 style={{ textAlign: "center" }}>Login</h1>
+                <div className='formRow'>
+                    <label>Username : </label>
+                    <input type="text" ref={usernameRef} />
+                </div>
+                <div className='formRow'>
+                    <label>Password : </label>
+                    <input type="password" ref={passwordRef} />
+                </div>
+                <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="#">Forgot password?</NavLink>
+                <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="/signup">Looking to signup?</NavLink>
+                <button onClick={loginHandler} className='primaryButton'>Go!</button>
+            </form>
+        }
     </div>;
 }
 

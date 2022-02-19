@@ -6,6 +6,9 @@ import { addTaskToStorage, Task, TaskPriority } from '../../Components/Task/Task
 import './TasksStyles.scss';
 
 import { useNavigate } from "react-router-dom"
+import useSpecificThemeData from '../../Components/hooks/useSpecificThemeData';
+import { ThemeDataType } from '../../ThemeUtils';
+import useThemeData from '../../Components/hooks/useThemeData';
 
 export function mapPriority(level: number) {
     if (level === 1) {
@@ -30,6 +33,7 @@ function CreateTask() {
     const endDateRef = useRef<HTMLInputElement>(null);
     const descriptionRef = useRef<HTMLInputElement>(null);
     const [priorityValue, setPriorityValue] = useState(0);
+    const themeData = useThemeData()[0];
 
     function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         e.preventDefault();
@@ -50,22 +54,22 @@ function CreateTask() {
                 <div className='formRow'>
                     <label>Task Name</label>
                     <label>:</label>
-                    <input ref={nameRef} type='text' />
+                    <input ref={nameRef} type='text' style={themeData as ThemeDataType} />
                 </div>
                 <div className='formRow'>
                     <label>Start Date</label>
                     <label>:</label>
-                    <input ref={startDateRef} type='date' />
+                    <input ref={startDateRef} type='date' style={themeData as ThemeDataType} />
                 </div>
                 <div className='formRow'>
                     <label>End Date</label>
                     <label>:</label>
-                    <input ref={endDateRef} type='date' />
+                    <input ref={endDateRef} type='date' style={themeData as ThemeDataType} />
                 </div>
                 <div className='formRow'>
                     <label>Description</label>
                     <label>:</label>
-                    <input ref={descriptionRef} type='text' />
+                    <input ref={descriptionRef} type='text' style={{ ...themeData, }} />
                 </div>
                 <div className='formRow'>
                     <label>Priority</label>

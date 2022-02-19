@@ -9,13 +9,16 @@ import PrioritiesHome from './Components/PriorityItems/PrioritiesHome';
 import { loadPriorityItemsDataFromLocalStorage } from './Components/PriorityItems/PriorityItemUtils';
 import { AlertInterface, getTasksCount } from './Components/Task/Task';
 import TilesContainer from './Components/TilesContainer/TilesContainer';
+import useThemeData from './Components/hooks/useThemeData';
 import { initaliseFirebase } from './firebase';
 import Login from './Pages/Authentication/Login';
 import Signup from './Pages/Authentication/Signup';
 import CreateTask from './Pages/Tasks/CreateTask';
 import EditTask from './Pages/Tasks/EditTask';
 import TasksHome from './Pages/Tasks/TasksHome';
+import { AppThemeType, DARK_THEME, getThemeStyles, LIGHT_THEME, loadThemeChoiceFromLocalStorage, ThemeContextType } from './ThemeUtils';
 import { AlertTheme, LoadInitialAuthData, PrioritiesContextInterface, UserDataContextInterface, UserDataInterface } from './Utilities';
+import SettingsPage from './Pages/SettingsPage';
 
 initaliseFirebase();
 
@@ -63,11 +66,17 @@ function loadPriorityItemsData(setPriorityItems: any) {
   setPriorityItems({ ...localData });
 }
 
+function loadThemeData(setThemeData: any) {
+  setThemeData(loadThemeChoiceFromLocalStorage());
+}
+
+
 
 export const TaskDataContext = createContext(loadTaskData());
 export const AlertContext = createContext([] as any);
 export const UserContext = createContext({} as UserDataContextInterface);
 export const PrioritiesContext = createContext({} as PrioritiesContextInterface);
+export const AppThemeContext = createContext({} as ThemeContextType);
 
 function App() {
   //TASK DATA CONTEXT DATA
@@ -75,7 +84,7 @@ function App() {
   const [alertData, setAlertData] = useState<AlertInterface>({ message: "", theme: AlertTheme.NORMAL });
   const [userData, setUserData] = useState<UserDataInterface>({ name: "Guest" } as UserDataInterface);
   const [prioritiesData, setPrioritiesData] = useState<any>({});
-
+  const [appThemeData, setAppThemeData] = useState(AppThemeType.LIGHT);
 
 
 
@@ -89,6 +98,7 @@ function App() {
         setUserData({ ...userData, name: user.email })
       }
     })
+    loadThemeData(setAppThemeData);
     loadTaskData(setTaskData);
     loadPriorityItemsData(setPrioritiesData);
 
@@ -106,35 +116,38 @@ function App() {
 
 
 
-
   return (
-    <UserContext.Provider value={{ userData, setUserData }}>
-      <PrioritiesContext.Provider value={{ prioritiesData, setPrioritiesData }}>
-        <TaskDataContext.Provider value={[taskData, setTaskData]}>
-          <AlertContext.Provider value={[alertData, setAlertData]}>
-            <div className='alertBanner' style={{ display: alertData.message.length == 0 ? "none" : "flex" }} >
-              {alertData.message}
-            </div>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<HomeScreen />} />
-                <Route path="/tasks" element={<TasksHome />} />
-                <Route path="/createTask" element={<CreateTask />} />
-                <Route path="/editTask/:taskId" element={<EditTask />} />
-                <Route path="/calculator" element={<Calculator />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/priorities" element={<PrioritiesHome />} />
-                <Route path="/settings" element={<Login />} />
-                <Route path="/createPriorityItem" element={<CreatePriorityItem />} />
-                <Route path="/editPriorityItem/:priorityItemId" element={<EditPriorityItem />} />
-              </Routes>
-            </BrowserRouter>
+    <AppThemeContext.Provider value={{ themeMode: appThemeData, setThemeMode: setAppThemeData }}>
+      <UserContext.Provider value={{ userData, setUserData }}>
+        <PrioritiesContext.Provider value={{ prioritiesData, setPrioritiesData }}>
+          <TaskDataContext.Provider value={[taskData, setTaskData]}>
+            <AlertContext.Provider value={[alertData, setAlertData]}>
 
-          </AlertContext.Provider>
-        </TaskDataContext.Provider>
-      </PrioritiesContext.Provider>
-    </UserContext.Provider>
+              <div className='bodyDiv' style={appThemeData === AppThemeType.DARK ? DARK_THEME : LIGHT_THEME}>
+                <div className='alertBanner' style={{ ...getThemeStyles(appThemeData), display: alertData.message.length == 0 ? "none" : "flex", marginTop: appThemeData === AppThemeType.DARK ? "0" : "10px" }} >
+                  {alertData.message}
+                </div>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<HomeScreen />} />
+                    <Route path="/tasks" element={<TasksHome />} />
+                    <Route path="/createTask" element={<CreateTask />} />
+                    <Route path="/editTask/:taskId" element={<EditTask />} />
+                    <Route path="/calculator" element={<Calculator />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/priorities" element={<PrioritiesHome />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/createPriorityItem" element={<CreatePriorityItem />} />
+                    <Route path="/editPriorityItem/:priorityItemId" element={<EditPriorityItem />} />
+                  </Routes>
+                </BrowserRouter>
+              </div>
+            </AlertContext.Provider>
+          </TaskDataContext.Provider>
+        </PrioritiesContext.Provider>
+      </UserContext.Provider>
+    </AppThemeContext.Provider>
   );
 }
 

@@ -8,6 +8,8 @@ import { PrioritiesContext } from '../../App';
 import PriorityItem from './PriorityItem';
 import { ItemsSortType, ItemsStatusType, loadDeadlineSortedItemsFromLocalStorage, loadPriSortedItemsFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems } from './PriorityItemUtils';
 import './PriorityItemStyles.scss';
+import { getThemeStyles, ThemeDataType } from '../../ThemeUtils';
+import useThemeData from '../hooks/useThemeData';
 
 
 function PrioritiesHome() {
@@ -17,6 +19,7 @@ function PrioritiesHome() {
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [itemStatus, setItemStatus] = useState(ItemsStatusType.ALL);
     const filterMenuRef = useRef<HTMLDivElement>(null);
+    const [themeData, setThemeData] = useThemeData();
 
     function getItemsOrder() {
         let itemOrder;
@@ -67,9 +70,9 @@ function PrioritiesHome() {
     }
 
     return (
-        <div>
+        <div style={themeData as ThemeDataType}>
             <CompactNav backTo='/' content='Priorities' extraLink={{ label: <AddIcon />, link: "/createPriorityItem" }} />
-            <div className="filtersDiv">
+            <div className="filtersDiv" style={themeData as ThemeDataType}>
                 <span>Sort by : </span>
                 <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.PRIORITY)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.PRIORITY) }}>Priority</button>
                 <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.DEADLINE)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.DEADLINE) }}>Deadline</button>
@@ -92,7 +95,7 @@ function PrioritiesHome() {
                 </div>
 
             </div>
-            <div className='outerDiv grid--center taskList'>
+            <div className='outerDiv grid--center taskList' style={themeData as ThemeDataType}>
                 {
                     itemsList
                 }

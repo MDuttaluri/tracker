@@ -1,6 +1,17 @@
 *{
     user-select: none;
+    
 }
+
+::-webkit-calendar-picker-indicator { 
+    background: #4b6cb7;
+    cursor: pointer;
+    width: 10px;
+    height : 12px;
+    border-radius: 2px;
+}
+
+
 
 a{
     text-decoration: none;
@@ -14,6 +25,10 @@ a:active{
 body{
     min-height: 100vh;
     min-width: 350px;
+}
+
+.bodyDiv{
+    min-height: 100vh;
 }
 
 .font--white{
@@ -215,6 +230,13 @@ body{
         min-height: 15px;
         width: 10%;
     }
+}
+
+
+.sliderOuter{
+    width : 100px;
+    height: 50px;
+    background-color: #182848;
 }
 
 

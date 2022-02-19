@@ -5,6 +5,8 @@ import CompactNav from '../../Components/CompactNav/CompactNav';
 import Selector from '../../Components/Selector/Selector';
 import { addTaskToStorage, deleteTaskFromStorage, Task } from '../../Components/Task/Task';
 import { mapPriority } from '../../Pages/Tasks/CreateTask';
+import { ThemeDataType } from '../../ThemeUtils';
+import useThemeData from '../hooks/useThemeData';
 import { finalisePriorityItemsInStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage } from './PriorityItemUtils';
 
 function EditPriorityItem() {
@@ -19,6 +21,7 @@ function EditPriorityItem() {
     const [isLoading, setIsLoading] = useState(true);
     const [selector, setSelector] = useState(<></>);
     const notesRef = useRef<HTMLTextAreaElement>(null);
+    const themeData = useThemeData()[0];
     const navigate = useNavigate();
 
     function saveTask(e: any) {
@@ -72,17 +75,17 @@ function EditPriorityItem() {
                     <div className='formRow'>
                         <label>Item Name</label>
                         <label>:</label>
-                        <input ref={nameRef} type='text' />
+                        <input ref={nameRef} type='text' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Deadline</label>
                         <label>:</label>
-                        <input ref={endDateRef} type='date' />
+                        <input ref={endDateRef} type='date' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Description</label>
                         <label>:</label>
-                        <input ref={descriptionRef} type='text' />
+                        <input ref={descriptionRef} type='text' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Priority</label>
@@ -91,7 +94,7 @@ function EditPriorityItem() {
                     </div>
                     <div className='formGrid'>
                         <label>Additional Notes</label>
-                        <textarea ref={notesRef} className='formTextArea' value={notesRef.current?.value} />
+                        <textarea ref={notesRef} className='formTextArea' style={themeData as ThemeDataType} />
                     </div>
                     <button type='submit' onClick={saveTask} className='primaryButton'>Save</button>
                     <p onClick={deleteTask} style={{ textAlign: 'center', color: "red", cursor: "pointer", width: "fit-content", justifySelf: "center" }}>Delete Task</p>
