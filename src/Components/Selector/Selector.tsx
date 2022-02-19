@@ -36,12 +36,7 @@ function Selector(props: SelectorPropsInterface) {
     function renderItems() {
         let items = []
         for (let i = 0; i < maxLevel; i++) {
-            items.push(<div key={'selectorDiv' + i} onClick={() => {
-                if (i < level)
-                    setLevel(level + 1)
-                else
-                    setLevel(level - 1)
-            }} className={'level--' + (i < level ? 'selected' : 'unselected')} style={{ backgroundColor: (i < level ? getPriorityColor(level) : "#fff") }} />)
+            items.push(<div key={'selectorDiv' + i} className={'level--' + (i < level ? 'selected' : 'unselected')} style={{ backgroundColor: (i < level ? getPriorityColor(level) : "#fff") }} />)
         }
         return items;
     }

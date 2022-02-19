@@ -17,7 +17,6 @@ export function TasksList(props: TasksListPropsInterface) {
 
             let tempTasks = [] as Task[]
             Object.keys(taskData).map((taskId) => {
-                console.log(`key : ${taskId}`);
 
                 if (taskId != 'tasksCount') {
                     const newTaskObj = new Task()
@@ -34,9 +33,6 @@ export function TasksList(props: TasksListPropsInterface) {
     return (
         <div className='outerDiv grid--center taskList'>
             {tasks.length > 0 && tasks.map((val, idx) => {
-                console.log(`Task comp created`);
-                console.log(val);
-
                 return <TaskComponent key={'taskComp' + idx} task={val} />
             })}
         </div>

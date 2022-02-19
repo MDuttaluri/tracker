@@ -3,6 +3,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import './App.scss';
 import Calculator from './Components/Calculator/Calculator';
+import CreatePriorityItem from './Components/PriorityItems/CreatePriorityItem';
+import EditPriorityItem from './Components/PriorityItems/EditPriorityItem';
+import PrioritiesHome from './Components/PriorityItems/PrioritiesHome';
+import { loadPriorityItemsDataFromLocalStorage } from './Components/PriorityItems/PriorityItemUtils';
 import { AlertInterface, getTasksCount } from './Components/Task/Task';
 import TilesContainer from './Components/TilesContainer/TilesContainer';
 import { initaliseFirebase } from './firebase';
@@ -11,7 +15,7 @@ import Signup from './Pages/Authentication/Signup';
 import CreateTask from './Pages/Tasks/CreateTask';
 import EditTask from './Pages/Tasks/EditTask';
 import TasksHome from './Pages/Tasks/TasksHome';
-import { AlertTheme, LoadInitialAuthData, UserDataContextInterface, UserDataInterface } from './Utilities';
+import { AlertTheme, LoadInitialAuthData, PrioritiesContextInterface, UserDataContextInterface, UserDataInterface } from './Utilities';
 
 initaliseFirebase();
 
@@ -36,7 +40,7 @@ try {
   try {
     Notification.requestPermission(lol)
   } catch (e) {
-    alert('error')
+
   }
 }
 
@@ -54,16 +58,23 @@ function loadTaskData(setTaskData?: any) {
   return taskData;
 }
 
+function loadPriorityItemsData(setPriorityItems: any) {
+  const localData = loadPriorityItemsDataFromLocalStorage() as any;
+  setPriorityItems({ ...localData });
+}
+
 
 export const TaskDataContext = createContext(loadTaskData());
 export const AlertContext = createContext([] as any);
 export const UserContext = createContext({} as UserDataContextInterface);
+export const PrioritiesContext = createContext({} as PrioritiesContextInterface);
 
 function App() {
   //TASK DATA CONTEXT DATA
   const [taskData, setTaskData] = useState({});
   const [alertData, setAlertData] = useState<AlertInterface>({ message: "", theme: AlertTheme.NORMAL });
   const [userData, setUserData] = useState<UserDataInterface>({ name: "Guest" } as UserDataInterface);
+  const [prioritiesData, setPrioritiesData] = useState<any>({});
 
 
 
@@ -78,7 +89,8 @@ function App() {
         setUserData({ ...userData, name: user.email })
       }
     })
-    loadTaskData(setTaskData)
+    loadTaskData(setTaskData);
+    loadPriorityItemsData(setPrioritiesData);
 
   }, [])
 
@@ -93,32 +105,35 @@ function App() {
   }, [alertData])
 
 
-  useEffect(() => {
-    console.warn(taskData)
-  }, [taskData])
 
 
   return (
     <UserContext.Provider value={{ userData, setUserData }}>
-      <TaskDataContext.Provider value={[taskData, setTaskData]}>
-        <AlertContext.Provider value={[alertData, setAlertData]}>
-          <div className='alertBanner' style={{ display: alertData.message.length == 0 ? "none" : "flex" }} >
-            {alertData.message}
-          </div>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/tasks" element={<TasksHome />} />
-              <Route path="/createTask" element={<CreateTask />} />
-              <Route path="/editTask/:taskId" element={<EditTask />} />
-              <Route path="/calculator" element={<Calculator />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-            </Routes>
-          </BrowserRouter>
+      <PrioritiesContext.Provider value={{ prioritiesData, setPrioritiesData }}>
+        <TaskDataContext.Provider value={[taskData, setTaskData]}>
+          <AlertContext.Provider value={[alertData, setAlertData]}>
+            <div className='alertBanner' style={{ display: alertData.message.length == 0 ? "none" : "flex" }} >
+              {alertData.message}
+            </div>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/tasks" element={<TasksHome />} />
+                <Route path="/createTask" element={<CreateTask />} />
+                <Route path="/editTask/:taskId" element={<EditTask />} />
+                <Route path="/calculator" element={<Calculator />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/priorities" element={<PrioritiesHome />} />
+                <Route path="/settings" element={<Login />} />
+                <Route path="/createPriorityItem" element={<CreatePriorityItem />} />
+                <Route path="/editPriorityItem/:priorityItemId" element={<EditPriorityItem />} />
+              </Routes>
+            </BrowserRouter>
 
-        </AlertContext.Provider>
-      </TaskDataContext.Provider>
+          </AlertContext.Provider>
+        </TaskDataContext.Provider>
+      </PrioritiesContext.Provider>
     </UserContext.Provider>
   );
 }
@@ -141,10 +156,13 @@ function HomeScreen() {
       <div className='Jumbotron'>
         {userData.name == "Guest" && <NavLink className={'userItem'} to='/login'>Login / Signup</NavLink>}
         {userData.name != "Guest" && <p className={'userItem'} onClick={() => {
-          alert(`pl`)
-          if (auth?.currentUser?.email) {
+          if (auth.currentUser?.email) {
+            alert("asd")
             signOut(auth).then((lol) => {
               setUserData({ ...userData, message: "Guest" })
+            }, (reason) => {
+              console.log(`logout failed : ${reason}`);
+
             })
           }
         }}>Sign out</p>}

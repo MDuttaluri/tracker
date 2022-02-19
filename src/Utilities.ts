@@ -17,6 +17,13 @@ export enum AlertTheme {
     'SUCESS', 'FAIL', 'NORMAL'
 }
 
+
+
+export interface PrioritiesContextInterface {
+    prioritiesData: any,
+    setPrioritiesData: any
+}
+
 export function LoadInitialAuthData() {
 
     /* useEffect(()=>{

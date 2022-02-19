@@ -10,13 +10,13 @@ import { getAnalytics } from "firebase/analytics";
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB1ted-wRkWuHdKsd0PHDCDN9qwwNDxLqs",
-    authDomain: "traq-it-b8b7d.firebaseapp.com",
-    projectId: "traq-it-b8b7d",
-    storageBucket: "traq-it-b8b7d.appspot.com",
-    messagingSenderId: "400453062456",
-    appId: "1:400453062456:web:f13a2a2f373d324dbabbcd",
-    measurementId: "G-LZPR2BHPB2"
+    apiKey: "AIzaSyCpAipEUN30yCPLDo1yNBxL2qnvIcJsEPk",
+    authDomain: "tracker-1ed54.firebaseapp.com",
+    projectId: "tracker-1ed54",
+    storageBucket: "tracker-1ed54.appspot.com",
+    messagingSenderId: "431266305593",
+    appId: "1:431266305593:web:ee6f80ef46e8d1acf15fe8",
+    measurementId: "G-6VNSSJZ2DJ"
 };
 
 // Initialize Firebase

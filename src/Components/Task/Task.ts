@@ -106,7 +106,7 @@ export interface TaskRange {
 
 
 export enum TaskPriority {
-    'VERY HIGH', 'HIGH', 'NORMAL', 'LOW', 'VERY LOW'
+    'VERY LOW', 'LOW', 'NORMAL', 'HIGH', 'VERY HIGH'
 }
 
 export function getTasksCount() {
@@ -145,7 +145,11 @@ export enum TimeType {
 
 export function getTime(startAt: any, endAt: any, type: TimeType) {
 
-    return moment(endAt).diff(startAt, type as any)
+    const res = moment(endAt).diff(startAt, type as any);
+    if (res)
+        return res;
+    else
+        return 0;
 
 }
 

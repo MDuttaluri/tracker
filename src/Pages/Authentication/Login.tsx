@@ -74,6 +74,7 @@ function Login() {
                 <input type="password" ref={passwordRef} />
             </div>
             <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="#">Forgot password?</NavLink>
+            <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="/signup">Looking to signup?</NavLink>
             <button onClick={loginHandler} className='primaryButton'>Go!</button>
         </form>
     </div>;
@@ -108,7 +109,7 @@ function AlreadyLoggedInDialog(props: AlreadyLoggedInDialogPropsType) {
         if (progressValue >= 100) {
             clearInterval(progressInterval);
 
-            // navigate("/")
+            //navigate("/")
         }
     }, [progressValue])
 
