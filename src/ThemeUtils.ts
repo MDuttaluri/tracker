@@ -13,7 +13,8 @@ export interface ThemeDataType {
     fill?: any,
     boxShadow?: any,
     background?: any,
-    borderBottom?: any
+    borderBottom?: any,
+    border?: any
 }
 
 export const DARK_THEME: ThemeDataType = {

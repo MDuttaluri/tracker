@@ -26,16 +26,6 @@ function CompactNav(props: CompactNavPropsInterface) {
         <NavLink to={props.backTo} className='CompactNav--link'><BackIcon className='icon' /></NavLink>
         <p>{props.content}</p>
         {props.extraLink && <NavLink to={props.extraLink.link}>{props.extraLink.label}</NavLink>}
-        <button onClick={() => {
-            if (themeMode === AppThemeType.DARK) {
-                setThemeMode(AppThemeType.LIGHT)
-                saveThemeChoiceToLocalStorage(AppThemeType.LIGHT)
-            } else {
-                setThemeMode(AppThemeType.DARK)
-                saveThemeChoiceToLocalStorage(AppThemeType.DARK)
-
-            }
-        }}>theme</button>
     </div>;
 }
 

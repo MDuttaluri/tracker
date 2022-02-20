@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom"
 import { TaskPriority } from '../Task/Task';
 import { AlertContext, PrioritiesContext } from '../../App';
 import { prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage } from './PriorityItemUtils';
+import useThemeData from '../hooks/useThemeData';
+import { ThemeDataType } from '../../ThemeUtils';
 
 function CreatePriorityItem() {
     let navigate = useNavigate();
@@ -17,6 +19,10 @@ function CreatePriorityItem() {
     const descriptionRef = useRef<HTMLInputElement>(null);
     const notesRef = useRef<HTMLTextAreaElement>(null);
     const [priorityValue, setPriorityValue] = useState(0);
+    const themeData = useThemeData()[0];
+
+    const [name, setName] = useState("");
+
 
     function isFormFilled() {
         if (!nameRef?.current?.value || nameRef?.current?.value.length <= 0) {
@@ -63,22 +69,22 @@ function CreatePriorityItem() {
                     <div className='formRow'>
                         <label>Item Name</label>
                         <label>:</label>
-                        <input ref={nameRef} type='text' />
+                        <input onChange={(e) => { setName(e.target.value) }} value={name} type='text' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Deadline</label>
                         <label>:</label>
-                        <input ref={endDateRef} type='date' />
+                        <input ref={endDateRef} type='date' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Description</label>
                         <label>:</label>
-                        <input ref={descriptionRef} type='text' />
+                        <input ref={descriptionRef} type='text' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Category</label>
                         <label>:</label>
-                        <input type='text' />
+                        <input type='text' style={themeData as ThemeDataType} />
 
                     </div>
                     <div className='formRow'>
@@ -88,7 +94,7 @@ function CreatePriorityItem() {
                     </div>
                     <div className='formGrid'>
                         <label>Additional Notes</label>
-                        <textarea ref={notesRef} className='formTextArea' />
+                        <textarea ref={notesRef} className='formTextArea' style={themeData as ThemeDataType} />
                     </div>
 
                     <button type='submit' onClick={handleClick} className='primaryButton'>Create</button>

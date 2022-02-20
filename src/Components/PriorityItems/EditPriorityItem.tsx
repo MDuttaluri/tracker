@@ -24,6 +24,9 @@ function EditPriorityItem() {
     const themeData = useThemeData()[0];
     const navigate = useNavigate();
 
+
+
+
     function saveTask(e: any) {
         e.preventDefault();
         let currentItem = prioritiesData[priorityItemId];

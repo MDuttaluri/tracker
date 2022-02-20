@@ -2,14 +2,15 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import CompactNav from '../CompactNav/CompactNav';
 import { ReactComponent as AddIcon } from '../../assets/addTask.svg';
 import { ReactComponent as FilterIcon } from '../../assets/filter.svg';
-import { PrioritiesContext } from '../../App';
+import { AppThemeContext, PrioritiesContext } from '../../App';
 
 
 import PriorityItem from './PriorityItem';
 import { ItemsSortType, ItemsStatusType, loadDeadlineSortedItemsFromLocalStorage, loadPriSortedItemsFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems } from './PriorityItemUtils';
 import './PriorityItemStyles.scss';
-import { getThemeStyles, ThemeDataType } from '../../ThemeUtils';
+import { AppThemeType, getThemeStyles, ThemeDataType } from '../../ThemeUtils';
 import useThemeData from '../hooks/useThemeData';
+import useSpecificThemeData from '../hooks/useSpecificThemeData';
 
 
 function PrioritiesHome() {
@@ -19,7 +20,11 @@ function PrioritiesHome() {
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [itemStatus, setItemStatus] = useState(ItemsStatusType.ALL);
     const filterMenuRef = useRef<HTMLDivElement>(null);
-    const [themeData, setThemeData] = useThemeData();
+    const { themeMode, setThemeMode } = useContext(AppThemeContext);
+    const themeData = useThemeData()[0];
+    const specificThemeData = useSpecificThemeData()[0];
+    const [isAnimatingTheDiv, setIsAnimatingTheDiv] = useState(false)
+
 
     function getItemsOrder() {
         let itemOrder;
@@ -72,26 +77,41 @@ function PrioritiesHome() {
     return (
         <div style={themeData as ThemeDataType}>
             <CompactNav backTo='/' content='Priorities' extraLink={{ label: <AddIcon />, link: "/createPriorityItem" }} />
-            <div className="filtersDiv" style={themeData as ThemeDataType}>
+            <div className="filtersDiv" style={specificThemeData as ThemeDataType}>
                 <span>Sort by : </span>
-                <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.PRIORITY)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.PRIORITY) }}>Priority</button>
-                <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.DEADLINE)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.DEADLINE) }}>Deadline</button>
+                <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.PRIORITY, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.PRIORITY) }}>Priority</button>
+                <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.DEADLINE, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.DEADLINE) }}>Deadline</button>
                 <button className='filterButtonIcon' onClick={() => {
-                    if (!showFilterMenu)
-                        filterMenuRef.current?.setAttribute("animation", "expandDiv 2s ease forwards")
-                    //filterMenuRef.current?.setAttribute("background-color", "green")
-                    else
-                        filterMenuRef.current?.setAttribute("animation", "closeDiv 2s ease forwards")
+                    if (isAnimatingTheDiv) {
+                        console.log(`cannot proceed `);
+                        return;
+                    }
+                    console.log(`${isAnimatingTheDiv}`)
+                    if (!showFilterMenu) {
+                        setShowFilterMenu(!showFilterMenu)
+                        filterMenuRef.current?.style.setProperty("animation", "expandDiv 0.5s ease forwards")
+                    }
+                    else {
+                        filterMenuRef.current?.style.setProperty("animation", "closeDiv 0.5s ease forwards");
+                        setIsAnimatingTheDiv(true);
+                        console.log(`animation started`);
 
-                    //setShowFilterMenu(!showFilterMenu)
+                        setTimeout(() => {
+                            setShowFilterMenu(!showFilterMenu);
+                            setIsAnimatingTheDiv(false);
+                            console.log(`animation ended`);
+
+                        }, 500)
+                    }
+
                 }}><FilterIcon height={'25px'} /></button>
             </div>
-            <div ref={filterMenuRef} className="expandableDiv">
-                <div className="filtersDiv" style={{ display: showFilterMenu ? "none" : "flex" }}>
-                    <span>Select type of data : </span>
-                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.ALL)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.ALL) }}>All</button>
-                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.INPROGRESS)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.INPROGRESS) }}>In progess</button>
-                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.COMPLETED)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.COMPLETED) }}>Completed</button>
+            <div ref={filterMenuRef} className="expandableDiv" hidden={!showFilterMenu}>
+                <div className="filtersDiv expandable--inner" style={specificThemeData as ThemeDataType}>
+                    <span>Status : </span>
+                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.ALL, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.ALL) }}>All</button>
+                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.INPROGRESS, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.INPROGRESS) }}>In progess</button>
+                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.COMPLETED, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.COMPLETED) }}>Completed</button>
                 </div>
 
             </div>
@@ -105,16 +125,24 @@ function PrioritiesHome() {
     )
 }
 
-function getFilterButtonStyle(currentSelection: ItemsSortType | ItemsStatusType, callerType: ItemsSortType | ItemsStatusType) {
+function getFilterButtonStyle(currentSelection: ItemsSortType | ItemsStatusType, callerType: ItemsSortType | ItemsStatusType, appTheme: AppThemeType) {
     if (currentSelection === callerType) {
         return {
             backgroundColor: "rgb(35, 112, 255)",
             color: "#fff"
         }
     } else {
-        return {
-            backgroundColor: "#fff",
-            color: "#000"
+        if (appTheme === AppThemeType.LIGHT) {
+            return {
+                backgroundColor: "#fff",
+                color: "#000"
+            }
+        } else {
+            return {
+                backgroundColor: "#000",
+                color: "#fff",
+                boxShadow: "none",
+            }
         }
     }
 }
