@@ -15,6 +15,8 @@ import useThemeData from '../hooks/useThemeData';
 import useSpecificThemeData from '../hooks/useSpecificThemeData';
 import { NavLink } from 'react-router-dom';
 import useFirestore from '../hooks/useFirestore';
+import usePriorityIndexedDB from '../hooks/usePriorityIndexedDB';
+import { IDBPDatabase } from 'idb';
 
 
 function PrioritiesHome() {
@@ -30,23 +32,24 @@ function PrioritiesHome() {
     const [isAnimatingTheDiv, setIsAnimatingTheDiv] = useState(false)
     const { userData, setUserData } = useContext(UserContext);
     const db = useFirestore();
+    const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
 
     useEffect(() => {
-        syncPriorityDataFromServer(db, userData.id, setUserData);
-        loadPriorityItemsDataFromLocalStorage();
+        syncPriorityDataFromServer(idb, db, userData.id, setUserData);
+        loadPriorityItemsDataFromLocalStorage(idb);
     }, [])
 
     function getItemsOrder() {
         let itemOrder;
         if (sortType == ItemsSortType.PRIORITY) {
-            itemOrder = loadPriSortedItemsFromLocalStorage();
+            itemOrder = loadPriSortedItemsFromLocalStorage(idb);
             if (!itemOrder || (itemOrder && itemOrder.length === 0)) {
-                itemOrder = preparePriSortPriorityItems();
+                itemOrder = preparePriSortPriorityItems(idb);
             }
         } else if (sortType == ItemsSortType.DEADLINE) {
-            itemOrder = loadDeadlineSortedItemsFromLocalStorage();
+            itemOrder = loadDeadlineSortedItemsFromLocalStorage(idb);
             if (!itemOrder || (itemOrder && itemOrder.length === 0)) {
-                itemOrder = prepareDeadlineSortPriorityItems();
+                itemOrder = prepareDeadlineSortPriorityItems(idb);
             }
         }
         return itemOrder;
@@ -59,6 +62,11 @@ function PrioritiesHome() {
     useEffect(() => {
         renderPriorityItems(getItemsOrder());
     }, [prioritiesData]);
+
+    useEffect(() => {
+        loadPriorityItemsDataFromLocalStorage(idb);
+        renderPriorityItems(getItemsOrder());
+    }, [idb])
 
     function renderPriorityItems(items: []) {
         const itemKeys = Object.keys(prioritiesData);

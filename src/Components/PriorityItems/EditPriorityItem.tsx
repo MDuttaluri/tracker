@@ -10,6 +10,8 @@ import useThemeData from '../hooks/useThemeData';
 import useFirestore from '../hooks/useFirestore';
 import NotificationSetup from '../NotificationSetup/NotificationSetup';
 import { addPriorityItemToDeletedList, deletePriorityItemFromServer, finalisePriorityItemsInStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage, syncPriorityDataFromServer, uploadPriorityToBeDeletedItemsToServer } from './PriorityItemUtils';
+import usePriorityIndexedDB from '../hooks/usePriorityIndexedDB';
+import { IDBPDatabase } from 'idb';
 
 function EditPriorityItem() {
     const priorityItemId = useParams()['priorityItemId'] as string;
@@ -28,6 +30,7 @@ function EditPriorityItem() {
     const themeData = useThemeData()[0];
     const navigate = useNavigate();
     const db = useFirestore();
+    const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
     const { userData, setUserData } = useContext(UserContext);
 
 
@@ -52,8 +55,8 @@ function EditPriorityItem() {
         }
         newItemsData[priorityItemId] = currentItem;
         setPrioritiesData(newItemsData);
-        finalisePriorityItemsInStorage(newItemsData);
-        syncPriorityDataFromServer(db, userData.id);
+        finalisePriorityItemsInStorage(idb, newItemsData);
+        syncPriorityDataFromServer(idb, db, userData.id);
         setAlertData({ ...alertData, message: `Item edited successfully!` });
         navigate("/priorities");
     }
@@ -61,11 +64,11 @@ function EditPriorityItem() {
     function deleteTask() {
         let newItemsData = prioritiesData;
         delete newItemsData[priorityItemId];
-        finalisePriorityItemsInStorage(newItemsData);
+        finalisePriorityItemsInStorage(idb, newItemsData);
         setAlertData({ ...alertData, message: "Item deleted successfully!" });
         addPriorityItemToDeletedList(priorityItemId);
         deletePriorityItemFromServer(db, userData.id, priorityItemId);
-        syncPriorityDataFromServer(db, userData.id);
+        syncPriorityDataFromServer(idb, db, userData.id);
         //uploadPriorityToBeDeletedItemsToServer(db, userData.id);
         navigate("/priorities");
     }

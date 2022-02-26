@@ -21,6 +21,8 @@ import { AlertTheme, PrioritiesContextInterface, UserDataContextInterface, UserD
 import SettingsPage from './Pages/SettingsPage';
 import useAuth from './Components/hooks/useAuth';
 import { Firestore, getFirestore } from 'firebase/firestore';
+import usePriorityIndexedDB from './Components/hooks/usePriorityIndexedDB';
+import { IDBPDatabase } from 'idb';
 
 initaliseFirebase();
 
@@ -62,7 +64,10 @@ function loadTaskData(setTaskData?: any) {
 }
 
 function loadPriorityItemsData(setPriorityItems: any) {
-  const localData = loadPriorityItemsDataFromLocalStorage() as any;
+  const localData = loadPriorityItemsDataFromLocalStorage(null) as any;
+  console.log('==================  LOCALDATA  ==================');
+  console.log(localData);
+  console.log('====================================');
   setPriorityItems({ ...localData });
 }
 
@@ -87,14 +92,14 @@ function App() {
   const [appThemeData, setAppThemeData] = useState(AppThemeType.LIGHT);
   const auth = useAuth();
   const db = getFirestore();
-
+  const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
 
 
   useEffect(() => {
     //Load task data and set it to the local state.
     loadThemeData(setAppThemeData);
     loadTaskData(setTaskData);
-    syncPriorityDataFromServer(db, userData.id);
+    syncPriorityDataFromServer(idb, db, userData.id);
     loadPriorityItemsData(setPrioritiesData);
 
   }, [])
@@ -102,7 +107,7 @@ function App() {
   useEffect(() => {
     if (auth.currentUser?.uid) {
       console.log(`log : ${userData.id}`);
-      syncPriorityDataFromServer(db, userData.id);
+      syncPriorityDataFromServer(idb, db, userData.id);
       loadPriorityItemsData(setPrioritiesData);
 
     }

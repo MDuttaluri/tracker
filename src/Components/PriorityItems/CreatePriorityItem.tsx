@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import CompactNav from '../CompactNav/CompactNav'
 import Selector from '../../Components/Selector/Selector';
 
@@ -9,11 +9,14 @@ import { loadPriorityItemsDataFromLocalStorage, prepareDeadlineSortPriorityItems
 import useThemeData from '../hooks/useThemeData';
 import { ThemeDataType } from '../../ThemeUtils';
 import useFirestore from '../hooks/useFirestore';
+import usePriorityIndexedDB from '../hooks/usePriorityIndexedDB';
+import { IDBPDatabase } from 'idb';
 
 function CreatePriorityItem() {
     let navigate = useNavigate();
     const { prioritiesData, setPrioritiesData } = useContext(PrioritiesContext);
     const [alertData, setAlertData] = useContext(AlertContext);
+    const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
 
     const nameRef = useRef<HTMLInputElement>(null);
     const endDateRef = useRef<HTMLInputElement>(null);
@@ -26,6 +29,14 @@ function CreatePriorityItem() {
 
     const [name, setName] = useState("");
 
+
+    useEffect(() => {
+        console.log('====================================');
+        console.log(`ok`);
+        console.log(idb);
+
+        console.log('====================================');
+    }, [idb])
 
     function isFormFilled() {
         if (!nameRef?.current?.value || nameRef?.current?.value.length <= 0) {
@@ -55,12 +66,12 @@ function CreatePriorityItem() {
             let newPrioritiesData = { ...prioritiesData };
             newPrioritiesData[itemJson.itemId] = itemJson;
             setPrioritiesData({ ...newPrioritiesData });
-            savePriorityItemsToLocalStorage({ ...newPrioritiesData });
+            savePriorityItemsToLocalStorage(idb as IDBPDatabase, { ...newPrioritiesData });
             setAlertData({ ...alertData, "message": "Priority item created!" });
-            syncPriorityDataFromServer(db, userData.id);
-            loadPriorityItemsDataFromLocalStorage();
-            preparePriSortPriorityItems();
-            prepareDeadlineSortPriorityItems();
+            syncPriorityDataFromServer(idb, db, userData.id);
+            loadPriorityItemsDataFromLocalStorage(idb);
+            preparePriSortPriorityItems(idb);
+            prepareDeadlineSortPriorityItems(idb);
             navigate("/priorities");
         } else {
             setAlertData({ ...alertData, "message": "The form is not yet completed to create an item." });
