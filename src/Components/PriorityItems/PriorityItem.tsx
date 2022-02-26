@@ -27,12 +27,15 @@ function PriorityItem(props: PriorityItemPropsType) {
     const priorityItem = props.priorityItem;
     const themeData = useThemeData()[0];
     const specificThemeData = useSpecificThemeData()[0];
+    const [relativeDeadline, setRelativeDeadline] = useState({} as any)
 
-
+    useEffect(() => {
+        setRelativeDeadline(getTime(moment(), priorityItem.deadline, TimeType.DAYS));
+    }, [priorityItem])
 
     return (
-        <NavLink id={priorityItem.itemId} to={'/editPriorityItem/' + priorityItem.itemId}>
-            <div className='priorityItem' style={specificThemeData as ThemeDataType}>
+        <div className='priorityItem' style={specificThemeData as ThemeDataType}>
+            {priorityItem && <>
                 <div className='taskLeftDiv' >
                     <p style={{ fontWeight: "600" }}>{priorityItem.itemName}</p>
                     {
@@ -44,49 +47,17 @@ function PriorityItem(props: PriorityItemPropsType) {
                     }
                 </div>
                 <div className='taskRightDiv'>
-                    <EditIcon className='taskEditIcon' height={'20px'} />
+                    <NavLink id={priorityItem.itemId} to={'/editPriorityItem/' + priorityItem.itemId}><EditIcon className='taskEditIcon' style={{ fill: (themeData as ThemeDataType).color }} height={'20px'} /></NavLink>
                     <p>{priorityItem.description}</p>
-                    <p><span style={{ fontWeight: '600' }}>{getTime(moment(), priorityItem.deadline, TimeType.DAYS)}</span> Days to go.</p>
+                    <p><span style={{ fontWeight: '600' }}>{relativeDeadline["body"]}</span></p>
                     <p>{priorityItem.notes}</p>
                 </div>
-            </div>
-        </NavLink>
+            </>
+            }
+        </div>
     )
 }
 
 
-function getStyleByPriority(priority: TaskPriority) {
-    if (priority === TaskPriority.HIGH) {
-        return {
-            backgroundColor: "blue",
-            color: "#fff"
-        };
-
-    } else if (priority === TaskPriority['VERY HIGH']) {
-        return {
-            backgroundColor: "blue",
-            color: "#fff"
-        };
-
-    } else if (priority === TaskPriority.NORMAL) {
-        return {
-            backgroundColor: "blue",
-            color: "#fff"
-        };
-
-    } else if (priority === TaskPriority.LOW) {
-        return {
-            backgroundColor: "blue",
-            color: "#fff"
-        };
-
-    } else if (priority === TaskPriority['VERY LOW']) {
-        return {
-            backgroundColor: "blue",
-            color: "#fff"
-        };
-
-    }
-}
 
 export default PriorityItem

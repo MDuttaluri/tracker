@@ -6,9 +6,13 @@ import { getAuth, createUserWithEmailAndPassword, User, Auth, sendEmailVerificat
 import { initaliseFirebase } from '../../firebase';
 import { ReactComponent as CrossIcon } from '../../assets/cross.svg';
 import { ReactComponent as CheckIcon } from '../../assets/check.svg';
+import useAuth from '../../Components/hooks/useAuth';
+import useSpecificThemeData from '../../Components/hooks/useSpecificThemeData';
+import { ThemeDataType } from '../../ThemeUtils';
+import useThemeData from '../../Components/hooks/useThemeData';
 
 
-let auth: Auth;
+
 
 function Signup() {
     const FADE_TRANSITION_DELAY_MS = 200;
@@ -23,6 +27,11 @@ function Signup() {
     const { userData, setUserData } = useContext(UserContext);
     const [isInitSetupDone, setIsInitSetupDone] = useState(false);
     const [authUserData, setAuthUserData] = useState({} as User);
+    const auth = useAuth();
+    const specificThemeData = useSpecificThemeData()[0];
+    const themeData = useThemeData()[0];
+
+
 
     function validateForm(e: any) {
         e.preventDefault();
@@ -85,12 +94,15 @@ function Signup() {
     }
 
     useEffect(() => {
-        auth = getAuth();
-        auth.onAuthStateChanged((user) => {
-            setAuthUserData(user as User);
-        })
         isInitSetupAlreadyDone();
     }, [userData])
+
+    useEffect(() => {
+        setAuthUserData(auth.currentUser as User);
+        console.log('====================================');
+        console.log(auth.currentUser?.emailVerified);
+        console.log('====================================');
+    }, [auth])
 
     return (
         <div>
@@ -102,15 +114,15 @@ function Signup() {
 
                     <div className='formRow'>
                         <label>Mail ID : </label>
-                        <input type="text" ref={mailIdRef} />
+                        <input type="text" ref={mailIdRef} style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Password : </label>
-                        <input type="password" ref={passwordRef} />
+                        <input type="password" ref={passwordRef} style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Confirm your password : </label>
-                        <input type="password" ref={passwordConfirmationRef} />
+                        <input type="password" ref={passwordConfirmationRef} style={themeData as ThemeDataType} />
                     </div>
                     <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="/login">Looking to login?</NavLink>
                     <button className='primaryButton' onClick={validateForm}>Go!</button>
@@ -121,7 +133,7 @@ function Signup() {
                     <h1 style={{ textAlign: "center" }}>Finish setting up your account</h1>
                     <div className='formRow'>
                         <label>Name : </label>
-                        <input type="text" ref={nameRef} />
+                        <input type="text" ref={nameRef} style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow' style={{ justifyContent: "left", columnGap: "25px" }}>
                         <span>Email Verification : </span>
@@ -140,7 +152,7 @@ function Signup() {
                                                 .catch((reason) => {
                                                     setAlertData({ ...alertData, message: reason + "" })
                                                 })
-                                    }} className='secondaryButton'>Send Verification</button>
+                                    }} className='secondaryButton' style={specificThemeData as ThemeDataType}>Send Verification</button>
                                 </div>}</span>
                     </div>
 

@@ -5,8 +5,8 @@ import CompactNav from '../../Components/CompactNav/CompactNav';
 import { getAuth, createUserWithEmailAndPassword, User, signInWithEmailAndPassword, UserCredential, Auth } from "firebase/auth";
 import './AuthenticationStyles.scss';
 import Loading from '../../Components/Loading/Loading';
+import useAuth from '../../Components/hooks/useAuth';
 
-let auth: Auth;
 
 function Login() {
     const [loggedInUser, setLoggedInUser] = useState({} as User);
@@ -17,6 +17,7 @@ function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [isAlreadyLoggedIn, setIsAlreadyLoggedIn] = useState(false);
     const navigate = useNavigate();
+    const auth = useAuth();
 
 
     function loginHandler(e: any) {
@@ -41,19 +42,10 @@ function Login() {
     }
 
     useEffect(() => {
-        auth = getAuth();
-        auth.onAuthStateChanged((user: User | null) => {
-
-            if (user?.email) {
-                console.log(`yup theres a user`);
-
-                setIsAlreadyLoggedIn(true);
-                //navigate("/")
-            }
-
-
-        })
-    }, [])
+        if (userData.name && userData.name != "Guest") {
+            setIsAlreadyLoggedIn(true);
+        }
+    }, [userData])
 
 
 
@@ -95,8 +87,6 @@ function AlreadyLoggedInDialog(props: AlreadyLoggedInDialogPropsType) {
 
     useEffect(() => {
         progressInterval = setInterval(() => {
-            console.log(`interval`);
-
             if (localProgressVal < 100)
                 localProgressVal += 20;
             setProgressValue(localProgressVal)
@@ -110,9 +100,9 @@ function AlreadyLoggedInDialog(props: AlreadyLoggedInDialogPropsType) {
     useEffect(() => {
         if (progressValue >= 100) {
             clearInterval(progressInterval);
-
-            //navigate("/")
+            navigate("/")
         }
+        return () => { clearInterval(progressInterval) }
     }, [progressValue])
 
     return (

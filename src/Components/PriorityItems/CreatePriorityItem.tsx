@@ -4,10 +4,11 @@ import Selector from '../../Components/Selector/Selector';
 
 import { useNavigate } from "react-router-dom"
 import { TaskPriority } from '../Task/Task';
-import { AlertContext, PrioritiesContext } from '../../App';
-import { prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage } from './PriorityItemUtils';
+import { AlertContext, PrioritiesContext, UserContext } from '../../App';
+import { loadPriorityItemsDataFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage, syncPriorityDataFromServer } from './PriorityItemUtils';
 import useThemeData from '../hooks/useThemeData';
 import { ThemeDataType } from '../../ThemeUtils';
+import useFirestore from '../hooks/useFirestore';
 
 function CreatePriorityItem() {
     let navigate = useNavigate();
@@ -20,6 +21,8 @@ function CreatePriorityItem() {
     const notesRef = useRef<HTMLTextAreaElement>(null);
     const [priorityValue, setPriorityValue] = useState(0);
     const themeData = useThemeData()[0];
+    const db = useFirestore();
+    const { userData, setUserData } = useContext(UserContext)
 
     const [name, setName] = useState("");
 
@@ -38,7 +41,10 @@ function CreatePriorityItem() {
             "description": descriptionRef?.current?.value,
             "notes": notesRef?.current?.value,
             "priority": priorityValue || TaskPriority.NORMAL,
-            "itemId": Date.now() + (nameRef?.current?.value || "")
+            "itemId": Date.now() + (nameRef?.current?.value || ""),
+            "status": 0,
+            "createdOn": Date.now(),
+            "lastModifiedOn": Date.now()
         }
     }
 
@@ -51,10 +57,13 @@ function CreatePriorityItem() {
             setPrioritiesData({ ...newPrioritiesData });
             savePriorityItemsToLocalStorage({ ...newPrioritiesData });
             setAlertData({ ...alertData, "message": "Priority item created!" });
-            prepareDeadlineSortPriorityItems();
+            syncPriorityDataFromServer(db, userData.id);
+            loadPriorityItemsDataFromLocalStorage();
             preparePriSortPriorityItems();
+            prepareDeadlineSortPriorityItems();
+            navigate("/priorities");
         } else {
-            alert("The form is not yet completed to create an item.")
+            setAlertData({ ...alertData, "message": "The form is not yet completed to create an item." });
         }
     }
 
@@ -69,7 +78,7 @@ function CreatePriorityItem() {
                     <div className='formRow'>
                         <label>Item Name</label>
                         <label>:</label>
-                        <input onChange={(e) => { setName(e.target.value) }} value={name} type='text' style={themeData as ThemeDataType} />
+                        <input ref={nameRef} onChange={(e) => { setName(e.target.value) }} value={name} type='text' style={themeData as ThemeDataType} />
                     </div>
                     <div className='formRow'>
                         <label>Deadline</label>

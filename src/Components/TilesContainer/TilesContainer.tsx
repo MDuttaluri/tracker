@@ -15,13 +15,22 @@ interface TilePropInterface {
     icon?: any
 }
 
+
 function TilesContainer() {
     const themeData = useThemeData()[0];
+
+    function getFillColor() {
+        if (themeData) {
+            return (themeData as ThemeDataType).color;
+        }
+        return "#fff";
+    }
+
     return <div className='tilesContainer' style={themeData as ThemeDataType}>
-        <Tile toURL='/tasks' content='Tasks' icon={<TasksIcon height={'30px'} />} />
-        <Tile toURL='/priorities' content='Priority Items' icon={<BookIcon height={'30px'} />} />
-        <Tile toURL='/calculator' content='Calculator' icon={<CalcIcon height={'30px'} />} />
-        <Tile toURL='/settings' content='Settings' icon={<GearIcon height={'30px'} />} />
+        <Tile toURL='/tasks' content='Tasks' icon={<TasksIcon height={'30px'} fill={getFillColor()} />} />
+        <Tile toURL='/priorities' content='Priority Items' icon={<BookIcon height={'30px'} fill={getFillColor()} />} />
+        <Tile toURL='/calculator' content='Calculator' icon={<CalcIcon height={'30px'} fill={getFillColor()} />} />
+        <Tile toURL='/settings' content='Settings' icon={<GearIcon height={'30px'} fill={getFillColor()} />} />
     </div>;
 }
 

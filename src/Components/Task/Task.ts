@@ -146,10 +146,29 @@ export enum TimeType {
 export function getTime(startAt: any, endAt: any, type: TimeType) {
 
     const res = moment(endAt).diff(startAt, type as any);
-    if (res)
-        return res;
+    if (res) {
+        let data = {
+            body: "",
+            data: "",
+        }
+        if (res > 0) {
+            if (res > 1)
+                data.body = `Ends in ${res} days`;
+            else
+                data.body = `Ends in ${res} day`;
+        } else if (res < 0) {
+            if (res === -1)
+                data.body = `Deadline passed ${Math.abs(res)} day ago`;
+            else
+                data.body = `Deadline passed ${Math.abs(res)} days ago`;
+        } else {
+            data.body = "Today is marked as the deadline for this task.";
+        }
+
+        return data;
+    }
     else
-        return 0;
+        return {};
 
 }
 

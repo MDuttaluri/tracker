@@ -1,0 +1,60 @@
+.notificationOuter{
+    display: flex;
+    gap : 5px;
+     &>input{
+            position: relative;
+            border: none;
+            border-bottom :rgb(35, 112, 255) solid 1px;
+            outline: none;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+            padding : 5px;
+            text-align: center;
+        }
+   
+    .addNotificationDiv{
+        display: flex;
+        max-width: 100px;
+        &>input{
+            border: none;
+            border-bottom :rgb(35, 112, 255) solid 1px;
+            outline: none;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+            padding : 5px;
+            text-align: center;
+        }
+        
+        button{
+            background-color: rgb(35, 112, 255);
+            color : #fff;
+            border : none;
+            border-radius: 5px;   
+            cursor: pointer;
+            min-height: 25px;
+        }
+    }
+}
+
+
+@media screen and (max-width : 750px) {
+    .notificationOuter{
+        .addNotificationDiv{
+            flex-direction: column;
+        }
+    }
+}
+
+/* SAFARI ONLY */
+@media not all and (min-resolution:.001dpcm)
+{ @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+    .notificationOuter { 
+      &>input[type='date']::before{
+        content: attr(placeholder);
+        position: absolute;
+        left  : 0;
+        width: 100%;
+        opacity: 0.4;
+    } 
+    }
+}}

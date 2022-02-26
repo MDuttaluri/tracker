@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { AppThemeContext } from '../App';
 import CompactNav from '../Components/CompactNav/CompactNav'
-import { AppThemeType, loadThemeChoiceFromLocalStorage, saveThemeChoiceToLocalStorage, ThemeDataType } from '../ThemeUtils'
+import { AppThemeType, loadThemeChoiceFromLocalStorage, saveThemeChoiceToLocalStorage, ThemeDataType } from '../ThemeUtils';
+import { ReactComponent as SunIcon } from '../assets/day.svg';
+import { ReactComponent as MoonIcon } from '../assets/night.svg';
 
 const DARK_SLIDER_THEME: ThemeDataType = {
     backgroundColor: "#000",
@@ -40,19 +42,24 @@ function SettingsPage() {
                 <h1 style={{ textAlign: "center" }}>Settings</h1>
                 <form className='form'>
                     <div className='formRow'>
-                        <label>App theme : </label>
-                        <div onClick={() => {
-                            if (themeMode === AppThemeType.DARK) {
-                                setThemeMode(AppThemeType.LIGHT)
-                                saveThemeChoiceToLocalStorage(AppThemeType.LIGHT)
-                            }
-                            if (themeMode === AppThemeType.LIGHT) {
-                                setThemeMode(AppThemeType.DARK)
-                                saveThemeChoiceToLocalStorage(AppThemeType.DARK)
-                            }
+                        <label>App theme</label>
+                        <label>:</label>
+                        <div style={{ display: "flex", alignItems: "center", gap: "5px", justifySelf: "center" }}>
+                            <SunIcon height={'30px'} />
+                            <div onClick={() => {
+                                if (themeMode === AppThemeType.DARK) {
+                                    setThemeMode(AppThemeType.LIGHT)
+                                    saveThemeChoiceToLocalStorage(AppThemeType.LIGHT)
+                                }
+                                if (themeMode === AppThemeType.LIGHT) {
+                                    setThemeMode(AppThemeType.DARK)
+                                    saveThemeChoiceToLocalStorage(AppThemeType.DARK)
+                                }
 
-                        }} className='sliderOuter' style={getSliderTheme(themeMode)}>
-                            <div ref={sliderRef} className="sliderInner"></div>
+                            }} className='sliderOuter' style={getSliderTheme(themeMode)}>
+                                <div ref={sliderRef} className="sliderInner"></div>
+                            </div>
+                            <MoonIcon height={'20px'} />
                         </div>
                     </div>
 

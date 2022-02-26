@@ -11,13 +11,13 @@ import { ThemeDataType } from '../../ThemeUtils';
 import useThemeData from '../../Components/hooks/useThemeData';
 
 export function mapPriority(level: number) {
-    if (level === 1) {
+    if (level === 0) {
         return TaskPriority['VERY LOW'];
-    } else if (level === 2) {
+    } else if (level === 1) {
         return TaskPriority.LOW;
-    } else if (level === 3) {
+    } else if (level === 2) {
         return TaskPriority.NORMAL;
-    } else if (level === 4) {
+    } else if (level === 3) {
         return TaskPriority.HIGH;
     } else {
         return TaskPriority['VERY HIGH'];

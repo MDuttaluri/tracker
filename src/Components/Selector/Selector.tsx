@@ -6,13 +6,13 @@ import { AppThemeContext } from '../../App';
 import { AppThemeType } from '../../ThemeUtils';
 
 function getPriorityColor(level: number) {
-    if (level === 1) {
+    if (level === 0) {
         return "#23ffab";
-    } else if (level === 2) {
+    } else if (level === 1) {
         return "rgb(35, 112, 255)";
-    } else if (level === 3) {
+    } else if (level === 2) {
         return "#ffe923";
-    } else if (level === 4) {
+    } else if (level === 3) {
         return "#ff8623";
     } else {
         return "#f5300d";
@@ -26,7 +26,7 @@ interface SelectorPropsInterface {
 
 
 function getUnselectedCellColor(level: number, currentIdx: number, themeSelected: AppThemeType) {
-    if (currentIdx < level) {
+    if (currentIdx <= level) {
         return { backgroundColor: getPriorityColor(level) };
     }
     if (themeSelected === AppThemeType.DARK) {

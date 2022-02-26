@@ -6,7 +6,7 @@ import Calculator from './Components/Calculator/Calculator';
 import CreatePriorityItem from './Components/PriorityItems/CreatePriorityItem';
 import EditPriorityItem from './Components/PriorityItems/EditPriorityItem';
 import PrioritiesHome from './Components/PriorityItems/PrioritiesHome';
-import { loadPriorityItemsDataFromLocalStorage } from './Components/PriorityItems/PriorityItemUtils';
+import { deletePriorityItemFromServer, downloadPrioritiesLastModified, loadPriorityItemsDataFromLocalStorage, syncPriorityDataFromServer } from './Components/PriorityItems/PriorityItemUtils';
 import { AlertInterface, getTasksCount } from './Components/Task/Task';
 import TilesContainer from './Components/TilesContainer/TilesContainer';
 import useThemeData from './Components/hooks/useThemeData';
@@ -17,35 +17,35 @@ import CreateTask from './Pages/Tasks/CreateTask';
 import EditTask from './Pages/Tasks/EditTask';
 import TasksHome from './Pages/Tasks/TasksHome';
 import { AppThemeType, DARK_THEME, getThemeStyles, LIGHT_THEME, loadThemeChoiceFromLocalStorage, ThemeContextType } from './ThemeUtils';
-import { AlertTheme, LoadInitialAuthData, PrioritiesContextInterface, UserDataContextInterface, UserDataInterface } from './Utilities';
+import { AlertTheme, PrioritiesContextInterface, UserDataContextInterface, UserDataInterface } from './Utilities';
 import SettingsPage from './Pages/SettingsPage';
+import useAuth from './Components/hooks/useAuth';
+import { Firestore, getFirestore } from 'firebase/firestore';
 
 initaliseFirebase();
 
-function lol(status: any) {
-  alert(status)
-}
 
 
-try {
 
-  Notification.requestPermission((status) => {
-    if (status == 'granted') {
-      navigator.serviceWorker.getRegistration()
-        .then((reg) => {
-          reg?.showNotification("Notifications will show up like this from now on.", { data: "This is the data part.", badge: "badge", requireInteraction: true })
-        })
-    }
-  })
+// try {
+
+//   Notification.requestPermission((status) => {
+//     if (status == 'granted') {
+//       navigator.serviceWorker.getRegistration()
+//         .then((reg) => {
+//           reg?.showNotification("Notifications will show up like this from now on.", { data: "This is the data part.", requireInteraction: false, badge: "%PUBLIC_URL%/favicon.ico", icon: "%PUBLIC_URL%/favicon.ico" })
+//         })
+//     }
+//   })
 
 
-} catch (e) {
-  try {
-    Notification.requestPermission(lol)
-  } catch (e) {
+// } catch (e) {
+//   try {
+//     Notification.requestPermission()
+//   } catch (e) {
 
-  }
-}
+//   }
+// }
 
 
 function loadTaskData(setTaskData?: any) {
@@ -85,24 +85,31 @@ function App() {
   const [userData, setUserData] = useState<UserDataInterface>({ name: "Guest" } as UserDataInterface);
   const [prioritiesData, setPrioritiesData] = useState<any>({});
   const [appThemeData, setAppThemeData] = useState(AppThemeType.LIGHT);
+  const auth = useAuth();
+  const db = getFirestore();
 
 
 
   useEffect(() => {
     //Load task data and set it to the local state.
-    const auth = getAuth();
-    auth.onAuthStateChanged((user) => {
-      console.log(`on auth change ----`);
-
-      if (user && user.email) {
-        setUserData({ ...userData, name: user.email })
-      }
-    })
     loadThemeData(setAppThemeData);
     loadTaskData(setTaskData);
+    syncPriorityDataFromServer(db, userData.id);
     loadPriorityItemsData(setPrioritiesData);
 
   }, [])
+
+  useEffect(() => {
+    if (auth.currentUser?.uid) {
+      console.log(`log : ${userData.id}`);
+      syncPriorityDataFromServer(db, userData.id);
+      loadPriorityItemsData(setPrioritiesData);
+
+    }
+
+  }, [userData])
+
+
 
   useEffect(() => {
     if (alertData.message != "")
@@ -156,12 +163,7 @@ function App() {
 function HomeScreen() {
 
   const { userData, setUserData } = useContext(UserContext);
-
-  let auth: Auth;
-
-  useEffect(() => {
-    auth = getAuth();
-  }, [])
+  const auth = useAuth();
 
 
   return (
@@ -170,13 +172,10 @@ function HomeScreen() {
         {userData.name == "Guest" && <NavLink className={'userItem'} to='/login'>Login / Signup</NavLink>}
         {userData.name != "Guest" && <p className={'userItem'} onClick={() => {
           if (auth.currentUser?.email) {
-            alert("asd")
-            signOut(auth).then((lol) => {
-              setUserData({ ...userData, message: "Guest" })
-            }, (reason) => {
-              console.log(`logout failed : ${reason}`);
-
-            })
+            signOut(auth)
+              .then(() => {
+                setUserData({ ...userData, name: "Guest" })
+              }, () => { })
           }
         }}>Sign out</p>}
         <h1>TraQ.it</h1>

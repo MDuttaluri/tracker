@@ -2,15 +2,19 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import CompactNav from '../CompactNav/CompactNav';
 import { ReactComponent as AddIcon } from '../../assets/addTask.svg';
 import { ReactComponent as FilterIcon } from '../../assets/filter.svg';
-import { AppThemeContext, PrioritiesContext } from '../../App';
+import { AppThemeContext, PrioritiesContext, UserContext } from '../../App';
+import { ReactComponent as NewTaskIcon } from '../../assets/createTask.svg';
+
 
 
 import PriorityItem from './PriorityItem';
-import { ItemsSortType, ItemsStatusType, loadDeadlineSortedItemsFromLocalStorage, loadPriSortedItemsFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems } from './PriorityItemUtils';
+import { ItemsSortType, ItemsStatusType, loadDeadlineSortedItemsFromLocalStorage, loadPriorityItemsDataFromLocalStorage, loadPriSortedItemsFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, syncPriorityDataFromServer } from './PriorityItemUtils';
 import './PriorityItemStyles.scss';
 import { AppThemeType, getThemeStyles, ThemeDataType } from '../../ThemeUtils';
 import useThemeData from '../hooks/useThemeData';
 import useSpecificThemeData from '../hooks/useSpecificThemeData';
+import { NavLink } from 'react-router-dom';
+import useFirestore from '../hooks/useFirestore';
 
 
 function PrioritiesHome() {
@@ -24,7 +28,13 @@ function PrioritiesHome() {
     const themeData = useThemeData()[0];
     const specificThemeData = useSpecificThemeData()[0];
     const [isAnimatingTheDiv, setIsAnimatingTheDiv] = useState(false)
+    const { userData, setUserData } = useContext(UserContext);
+    const db = useFirestore();
 
+    useEffect(() => {
+        syncPriorityDataFromServer(db, userData.id, setUserData);
+        loadPriorityItemsDataFromLocalStorage();
+    }, [])
 
     function getItemsOrder() {
         let itemOrder;
@@ -52,9 +62,13 @@ function PrioritiesHome() {
 
     function renderPriorityItems(items: []) {
         const itemKeys = Object.keys(prioritiesData);
+        let noItemsAvaiable = true;
+
         if (itemKeys.length == 0) {
-            return setItemsList(<div>
-                <p>No items available...</p>
+            return setItemsList(<div className='createNewTaskDialog'>
+                <NewTaskIcon className='svg' />
+                <p>It's all clear here. <br />Log an item now!</p>
+                <NavLink to="/createPriorityItem"><button className='primaryButton'>Create Item</button></NavLink>
             </div>);
         } else {
             setItemsList(
@@ -62,8 +76,10 @@ function PrioritiesHome() {
                     {
                         items.map((item, idx) => {
 
-                            if (itemStatus === ItemsStatusType.ALL || prioritiesData[item[0]]['status'] === itemStatus)
+                            if (itemStatus === ItemsStatusType.ALL || prioritiesData[item[0]]['status'] === itemStatus) {
+                                noItemsAvaiable = false;
                                 return <PriorityItem key={`priItem` + idx} priorityItem={prioritiesData[item[0]]} />
+                            }
                             else
                                 return <></>
                         })
@@ -71,6 +87,13 @@ function PrioritiesHome() {
                 </>
             );
 
+        }
+        if (noItemsAvaiable) {
+            setItemsList(<div className='createNewTaskDialog'>
+                <NewTaskIcon className='svg' />
+                <p>It's all clear here. <br />Log an item now!</p>
+                <NavLink to="/createPriorityItem"><button className='primaryButton'>Create Item</button></NavLink>
+            </div>)
         }
     }
 
@@ -83,10 +106,8 @@ function PrioritiesHome() {
                 <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.DEADLINE, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.DEADLINE) }}>Deadline</button>
                 <button className='filterButtonIcon' onClick={() => {
                     if (isAnimatingTheDiv) {
-                        console.log(`cannot proceed `);
                         return;
                     }
-                    console.log(`${isAnimatingTheDiv}`)
                     if (!showFilterMenu) {
                         setShowFilterMenu(!showFilterMenu)
                         filterMenuRef.current?.style.setProperty("animation", "expandDiv 0.5s ease forwards")
