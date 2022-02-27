@@ -35,7 +35,7 @@ function EditPriorityItem() {
 
 
 
-    function saveTask(e: any, newItemStatus?: number) {
+    async function saveTask(e: any, newItemStatus?: number) {
         e.preventDefault();
         let currentItem = prioritiesData[priorityItemId];
         currentItem["itemName"] = nameRef.current?.value;
@@ -55,16 +55,16 @@ function EditPriorityItem() {
         }
         newItemsData[priorityItemId] = currentItem;
         setPrioritiesData(newItemsData);
-        finalisePriorityItemsInStorage(idb, newItemsData);
+        await finalisePriorityItemsInStorage(idb, newItemsData);
         syncPriorityDataFromServer(idb, db, userData.id);
         setAlertData({ ...alertData, message: `Item edited successfully!` });
         navigate("/priorities");
     }
 
-    function deleteTask() {
+    async function deleteTask() {
         let newItemsData = prioritiesData;
         delete newItemsData[priorityItemId];
-        finalisePriorityItemsInStorage(idb, newItemsData);
+        await finalisePriorityItemsInStorage(idb, newItemsData);
         setAlertData({ ...alertData, message: "Item deleted successfully!" });
         addPriorityItemToDeletedList(idb, priorityItemId);
         deletePriorityItemFromServer(db, userData.id, priorityItemId);

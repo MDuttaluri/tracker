@@ -34,41 +34,61 @@ function PrioritiesHome() {
     const db = useFirestore();
     const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
 
-    useEffect(() => {
+    async function syncAndLoadData() {
         syncPriorityDataFromServer(idb, db, userData.id, setUserData);
-        loadPriorityItemsDataFromLocalStorage(idb);
+        await loadPriorityItemsDataFromLocalStorage(idb);
+    }
+
+    async function renderPriorityItemsAsync() {
+        renderPriorityItems(await getItemsOrder());
+    }
+
+    async function loadAndRenderItems() {
+        await loadPriorityItemsDataFromLocalStorage(idb);
+        renderPriorityItems(await getItemsOrder());
+    }
+
+    useEffect(() => {
+        syncAndLoadData();
     }, [])
 
-    function getItemsOrder() {
+    async function getItemsOrder() {
         let itemOrder;
         if (sortType == ItemsSortType.PRIORITY) {
             itemOrder = loadPriSortedItemsFromLocalStorage(idb);
             if (!itemOrder || (itemOrder && itemOrder.length === 0)) {
-                itemOrder = preparePriSortPriorityItems(idb);
+                itemOrder = await preparePriSortPriorityItems(idb);
             }
         } else if (sortType == ItemsSortType.DEADLINE) {
             itemOrder = loadDeadlineSortedItemsFromLocalStorage(idb);
             if (!itemOrder || (itemOrder && itemOrder.length === 0)) {
-                itemOrder = prepareDeadlineSortPriorityItems(idb);
+                itemOrder = await prepareDeadlineSortPriorityItems(idb);
             }
         }
         return itemOrder;
     }
 
     useEffect(() => {
-        renderPriorityItems(getItemsOrder());
+        renderPriorityItemsAsync();
     }, [sortType, itemStatus]);
 
     useEffect(() => {
-        renderPriorityItems(getItemsOrder());
+        renderPriorityItemsAsync();
     }, [prioritiesData]);
 
     useEffect(() => {
-        loadPriorityItemsDataFromLocalStorage(idb);
-        renderPriorityItems(getItemsOrder());
+        // console.log('====================================');
+        // console.log(`IDB READY AND ABOUT TO LOAD THE DATA`);
+        // console.log('====================================');
+        loadAndRenderItems();
     }, [idb])
 
     function renderPriorityItems(items: []) {
+        // console.log('====================================');
+        // console.log(`RENDER METHOD WITH ITEMS`);
+        // console.log(items);
+        // console.log(prioritiesData);
+        // console.log('====================================');
         const itemKeys = Object.keys(prioritiesData);
         let noItemsAvaiable = true;
 

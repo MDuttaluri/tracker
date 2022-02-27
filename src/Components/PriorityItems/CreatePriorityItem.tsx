@@ -59,7 +59,7 @@ function CreatePriorityItem() {
         }
     }
 
-    function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    async function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         e.preventDefault();
         if (isFormFilled()) {
             const itemJson = getJsonItem();
@@ -69,9 +69,9 @@ function CreatePriorityItem() {
             savePriorityItemsToLocalStorage(idb as IDBPDatabase, { ...newPrioritiesData });
             setAlertData({ ...alertData, "message": "Priority item created!" });
             syncPriorityDataFromServer(idb, db, userData.id);
-            loadPriorityItemsDataFromLocalStorage(idb);
-            preparePriSortPriorityItems(idb);
-            prepareDeadlineSortPriorityItems(idb);
+            await loadPriorityItemsDataFromLocalStorage(idb);
+            await preparePriSortPriorityItems(idb);
+            await prepareDeadlineSortPriorityItems(idb);
             navigate("/priorities");
         } else {
             setAlertData({ ...alertData, "message": "The form is not yet completed to create an item." });

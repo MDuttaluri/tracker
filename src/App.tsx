@@ -63,10 +63,12 @@ function loadTaskData(setTaskData?: any) {
   return taskData;
 }
 
-function loadPriorityItemsData(setPriorityItems: any) {
-  const localData = loadPriorityItemsDataFromLocalStorage(null) as any;
-  console.log('==================  LOCALDATA  ==================');
+async function loadPriorityItemsData(setPriorityItems: any, idb: IDBPDatabase<unknown>) {
+  const localData = await loadPriorityItemsDataFromLocalStorage(idb) as any;
+  console.log('==================  DATA AFTER LOADING FROM APP.TSX  ==================');
   console.log(localData);
+  console.log(idb);
+
   console.log('====================================');
   setPriorityItems({ ...localData });
 }
@@ -94,13 +96,19 @@ function App() {
   const db = getFirestore();
   const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
 
+  async function loadAndSyncPriorityData() {
+    console.log(`=== idb is ready===`);
+
+    syncPriorityDataFromServer(idb, db, userData.id);
+    loadPriorityItemsData(setPrioritiesData, idb);
+  }
 
   useEffect(() => {
     //Load task data and set it to the local state.
     loadThemeData(setAppThemeData);
     loadTaskData(setTaskData);
     syncPriorityDataFromServer(idb, db, userData.id);
-    loadPriorityItemsData(setPrioritiesData);
+    loadPriorityItemsData(setPrioritiesData, idb);
 
   }, [])
 
@@ -108,12 +116,16 @@ function App() {
     if (auth.currentUser?.uid) {
       console.log(`log : ${userData.id}`);
       syncPriorityDataFromServer(idb, db, userData.id);
-      loadPriorityItemsData(setPrioritiesData);
+      loadPriorityItemsData(setPrioritiesData, idb);
 
     }
 
   }, [userData])
 
+  useEffect(() => {
+    if (idb)
+      loadAndSyncPriorityData()
+  }, [idb])
 
 
   useEffect(() => {

@@ -26,15 +26,8 @@ export const PriorityObjStoreNames = {
 
 
 export function savePriorityItemsToLocalStorage(db: IDBPDatabase<unknown>, items: any) {
-    
-    const stringItems = JSON.stringify(items);
-    localStorage.setItem(PRIORITY_ITEMS_LOCALSTORAGE_PATH, stringItems);
-
-    //idb implementation
     let transaction = db.transaction([PriorityObjStoreNames.MAIN], "readwrite");
     let mainObjStore = transaction.objectStore(PriorityObjStoreNames.MAIN);
-
-    let preparedItems = [];
     Object.keys(items).map(async (id) => {
         mainObjStore.put(items[id]).catch((reason)=>{console.error(reason);
         })
@@ -42,17 +35,17 @@ export function savePriorityItemsToLocalStorage(db: IDBPDatabase<unknown>, items
 }
 
 
-export function loadPriorityItemsDataFromLocalStorage(idb: IDBPDatabase<unknown> | null) {
+export async function loadPriorityItemsDataFromLocalStorage(idb: IDBPDatabase<unknown> | null) {
     
     // idb implementation
-   /* if(idb){
+    if(idb){
 
         let transaction = idb.transaction(PriorityObjStoreNames.MAIN,"readonly");
         let mainObjStore = transaction.objectStore(PriorityObjStoreNames.MAIN);
         let items =  await mainObjStore.getAll();
-        console.log('=================  ITEMS  ===================');
-        console.log(items);
-        console.log('====================================');
+        // console.log('=================  ITEMS  ===================');
+        // console.log(items);
+        // console.log('====================================');
         let finalItems : any = {};
         if(items.length > 0){
             items.map((item)=>{
@@ -61,21 +54,15 @@ export function loadPriorityItemsDataFromLocalStorage(idb: IDBPDatabase<unknown>
            // return finalItems;
             console.log(`loaded from local :`);
            console.log(finalItems);
-           
+           return finalItems;
         }else{
-            //return {}
+            return {}
         }
-    }*/
-
-    let localItems = localStorage.getItem(PRIORITY_ITEMS_LOCALSTORAGE_PATH);
-    if (localItems) {
-        localItems = JSON.parse(localItems);
-        return localItems;
-    } else {
+    }else{
+        console.log(`returning empty cause idb is null`);
+        
         return {}
     }
-
-
 }
 
 export function loadPriSortedItemsFromLocalStorage(idb : IDBPDatabase<unknown>) {
@@ -129,13 +116,13 @@ export function savePriSortedItemsOnLocalStorge(idb: IDBPDatabase<unknown>,items
 }
 
 
-export function preparePriSortPriorityItems(idb: IDBPDatabase<unknown> , items?: any) {
+export async function preparePriSortPriorityItems(idb: IDBPDatabase<unknown> , items?: any) {
     // idb implementation
 
     // PRISORT -> PRIORITY BASED SORTING OF ITEMS.
     if (!items) {
         //promise
-        items = loadPriorityItemsDataFromLocalStorage(idb);
+        items = await loadPriorityItemsDataFromLocalStorage(idb);
     }
     console.log('====================================');
     console.log(`pri sort`);
@@ -213,12 +200,12 @@ export function saveDeadlineSortedItemsOnLocalStorge(idb : IDBPDatabase<unknown>
     localStorage.setItem(PRIORITY_ITEMS_DEADLINESORTED_LOCALSTORAGE_PATH, stringItems);
 }
 
-export function prepareDeadlineSortPriorityItems(idb: IDBPDatabase<unknown>,items?: any) {
+export async function prepareDeadlineSortPriorityItems(idb: IDBPDatabase<unknown>,items?: any) {
     // idb implementation
 
     // DEADLINE -> DEADLINE BASED SORTING OF ITEMS.
     if (!items) {
-        items = loadPriorityItemsDataFromLocalStorage(idb);
+        items = await loadPriorityItemsDataFromLocalStorage(idb);
     }
 
     let localPriItems = loadDeadlineSortedItemsFromLocalStorage(idb);
@@ -278,12 +265,12 @@ function getPriorityPrecedence(val1: TaskPriority, val2: TaskPriority) {
 }
 
 
-export function finalisePriorityItemsInStorage(db:IDBPDatabase<unknown> ,items: any) {
+export async function finalisePriorityItemsInStorage(db:IDBPDatabase<unknown> ,items: any) {
         // idb implementation
 
     savePriorityItemsToLocalStorage(db, items);
-    prepareDeadlineSortPriorityItems(db,items);
-    preparePriSortPriorityItems(db,items);
+    await prepareDeadlineSortPriorityItems(db,items);
+    await preparePriSortPriorityItems(db,items);
 }
 
 
@@ -317,7 +304,7 @@ async function getCombinedToBeDeletedPriorityItems(idb :IDBPDatabase<unknown> ,d
 
 
 export async function syncPriorityDataFromServer(idb : IDBPDatabase<unknown>,db: Firestore, uid: string, setState?: any) {
-    if (!uid || uid.length === 0)
+ /*   if (!uid || uid.length === 0)
         return;
     const priorityItemsFromLocal: any = loadPriorityItemsDataFromLocalStorage(idb) || {};
     const priorityItemsFromServerZipped = await getPriorityItemsFromServer(db, uid);
@@ -387,7 +374,7 @@ export async function syncPriorityDataFromServer(idb : IDBPDatabase<unknown>,db:
 
         savePriorityItemToDeletedList(idb, new Set());
 
-    }
+    }*/
 
 }
 
