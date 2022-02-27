@@ -6,7 +6,7 @@ import Calculator from './Components/Calculator/Calculator';
 import CreatePriorityItem from './Components/PriorityItems/CreatePriorityItem';
 import EditPriorityItem from './Components/PriorityItems/EditPriorityItem';
 import PrioritiesHome from './Components/PriorityItems/PrioritiesHome';
-import { deletePriorityItemFromServer, downloadPrioritiesLastModified, loadPriorityItemsDataFromLocalStorage, syncPriorityDataFromServer } from './Components/PriorityItems/PriorityItemUtils';
+import { deletePriorityItemFromServer, loadPriorityItemsDataFromLocalStorage, syncPriorityDataFromServer } from './Components/PriorityItems/PriorityItemUtils';
 import { AlertInterface, getTasksCount } from './Components/Task/Task';
 import TilesContainer from './Components/TilesContainer/TilesContainer';
 import useThemeData from './Components/hooks/useThemeData';

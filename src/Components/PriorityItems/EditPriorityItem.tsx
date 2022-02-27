@@ -66,7 +66,7 @@ function EditPriorityItem() {
         delete newItemsData[priorityItemId];
         finalisePriorityItemsInStorage(idb, newItemsData);
         setAlertData({ ...alertData, message: "Item deleted successfully!" });
-        addPriorityItemToDeletedList(priorityItemId);
+        addPriorityItemToDeletedList(idb, priorityItemId);
         deletePriorityItemFromServer(db, userData.id, priorityItemId);
         syncPriorityDataFromServer(idb, db, userData.id);
         //uploadPriorityToBeDeletedItemsToServer(db, userData.id);
