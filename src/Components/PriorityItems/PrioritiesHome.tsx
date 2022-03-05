@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import CompactNav from '../CompactNav/CompactNav';
 import { ReactComponent as AddIcon } from '../../assets/addTask.svg';
-import { ReactComponent as FilterIcon } from '../../assets/filter.svg';
 import { AppThemeContext, PrioritiesContext, UserContext } from '../../App';
 import { ReactComponent as NewTaskIcon } from '../../assets/createTask.svg';
 
@@ -55,12 +54,12 @@ function PrioritiesHome() {
     async function getItemsOrder() {
         let itemOrder;
         if (sortType == ItemsSortType.PRIORITY) {
-            itemOrder = loadPriSortedItemsFromLocalStorage(idb);
+            itemOrder = await loadPriSortedItemsFromLocalStorage(idb) as any;
             if (!itemOrder || (itemOrder && itemOrder.length === 0)) {
                 itemOrder = await preparePriSortPriorityItems(idb);
             }
         } else if (sortType == ItemsSortType.DEADLINE) {
-            itemOrder = loadDeadlineSortedItemsFromLocalStorage(idb);
+            itemOrder = await loadDeadlineSortedItemsFromLocalStorage(idb) as any;
             if (!itemOrder || (itemOrder && itemOrder.length === 0)) {
                 itemOrder = await prepareDeadlineSortPriorityItems(idb);
             }
@@ -143,17 +142,14 @@ function PrioritiesHome() {
                     else {
                         filterMenuRef.current?.style.setProperty("animation", "closeDiv 0.5s ease forwards");
                         setIsAnimatingTheDiv(true);
-                        console.log(`animation started`);
 
                         setTimeout(() => {
                             setShowFilterMenu(!showFilterMenu);
                             setIsAnimatingTheDiv(false);
-                            console.log(`animation ended`);
-
                         }, 500)
                     }
 
-                }}><FilterIcon height={'25px'} /></button>
+                }} style={{ color: (themeData as ThemeDataType).color }}>More</button>
             </div>
             <div ref={filterMenuRef} className="expandableDiv" hidden={!showFilterMenu}>
                 <div className="filtersDiv expandable--inner" style={specificThemeData as ThemeDataType}>

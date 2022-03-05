@@ -23,6 +23,8 @@ function getSliderTheme(selectedTheme: AppThemeType) {
 
 function SettingsPage() {
     const sliderRef = useRef<HTMLDivElement>(null);
+    const tempRef = useRef<HTMLParagraphElement>(null);
+    const [tempData, setTempData] = useState("")
     const { themeMode, setThemeMode } = useContext(AppThemeContext);
 
     useEffect(() => {
@@ -31,9 +33,19 @@ function SettingsPage() {
         } else {
             sliderRef?.current?.style.setProperty("animation", "slideToRight 0.2s ease forwards");
         }
-
     }, [themeMode]);
 
+    try {
+        window.addEventListener('devicemotion', function (event: any) {
+            setTempData(event.acceleration.x + ", " + event.acceleration.y);
+        });
+    } catch (e) {
+        alert("ex")
+    }
+
+    useEffect(() => {
+
+    }, [tempData])
 
     return (
         <div>
@@ -62,7 +74,7 @@ function SettingsPage() {
                             <MoonIcon height={'20px'} />
                         </div>
                     </div>
-
+                    <p>SPEED  : </p>{tempData}
                 </form>
             </div>
         </div>

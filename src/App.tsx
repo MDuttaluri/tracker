@@ -28,7 +28,6 @@ initaliseFirebase();
 
 
 
-
 // try {
 
 //   Notification.requestPermission((status) => {

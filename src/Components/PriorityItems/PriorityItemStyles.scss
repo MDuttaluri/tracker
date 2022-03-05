@@ -12,9 +12,12 @@
 .filterButtonIcon{
     background-color: transparent;
     border: none;
-    position: fixed;
+    position: relative;
     cursor: pointer;
-    right : 10px;
+    float: inline-end;
+    right : 0px;
+    font-size: 16px;
+    margin-left: auto;
 }
 
 .expandableDiv{

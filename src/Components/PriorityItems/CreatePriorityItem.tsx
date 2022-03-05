@@ -5,7 +5,7 @@ import Selector from '../../Components/Selector/Selector';
 import { useNavigate } from "react-router-dom"
 import { TaskPriority } from '../Task/Task';
 import { AlertContext, PrioritiesContext, UserContext } from '../../App';
-import { loadPriorityItemsDataFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage, syncPriorityDataFromServer } from './PriorityItemUtils';
+import { finalisePriorityItemsInStorage, loadPriorityItemsDataFromLocalStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage, syncPriorityDataFromServer } from './PriorityItemUtils';
 import useThemeData from '../hooks/useThemeData';
 import { ThemeDataType } from '../../ThemeUtils';
 import useFirestore from '../hooks/useFirestore';
@@ -53,7 +53,7 @@ function CreatePriorityItem() {
             "notes": notesRef?.current?.value,
             "priority": priorityValue || TaskPriority.NORMAL,
             "itemId": Date.now() + (nameRef?.current?.value || ""),
-            "status": 0,
+            "status": 1,
             "createdOn": Date.now(),
             "lastModifiedOn": Date.now()
         }
@@ -66,12 +66,13 @@ function CreatePriorityItem() {
             let newPrioritiesData = { ...prioritiesData };
             newPrioritiesData[itemJson.itemId] = itemJson;
             setPrioritiesData({ ...newPrioritiesData });
-            savePriorityItemsToLocalStorage(idb as IDBPDatabase, { ...newPrioritiesData });
+            // await savePriorityItemsToLocalStorage(idb, { ...newPrioritiesData });
             setAlertData({ ...alertData, "message": "Priority item created!" });
             syncPriorityDataFromServer(idb, db, userData.id);
-            await loadPriorityItemsDataFromLocalStorage(idb);
-            await preparePriSortPriorityItems(idb);
-            await prepareDeadlineSortPriorityItems(idb);
+            await finalisePriorityItemsInStorage(idb, { ...newPrioritiesData });
+            // await loadPriorityItemsDataFromLocalStorage(idb);
+            //  await preparePriSortPriorityItems(idb);
+            //  await prepareDeadlineSortPriorityItems(idb);
             navigate("/priorities");
         } else {
             setAlertData({ ...alertData, "message": "The form is not yet completed to create an item." });

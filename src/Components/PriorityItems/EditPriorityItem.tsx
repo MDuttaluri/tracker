@@ -9,7 +9,7 @@ import { ThemeDataType } from '../../ThemeUtils';
 import useThemeData from '../hooks/useThemeData';
 import useFirestore from '../hooks/useFirestore';
 import NotificationSetup from '../NotificationSetup/NotificationSetup';
-import { addPriorityItemToDeletedList, deletePriorityItemFromServer, finalisePriorityItemsInStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage, syncPriorityDataFromServer, uploadPriorityToBeDeletedItemsToServer } from './PriorityItemUtils';
+import { addPriorityItemToDeletedList, deletePriorityItemFromLocalStorage, deletePriorityItemFromServer, finalisePriorityItemsInStorage, prepareDeadlineSortPriorityItems, preparePriSortPriorityItems, savePriorityItemsToLocalStorage, syncPriorityDataFromServer, uploadPriorityToBeDeletedItemsToServer } from './PriorityItemUtils';
 import usePriorityIndexedDB from '../hooks/usePriorityIndexedDB';
 import { IDBPDatabase } from 'idb';
 
@@ -61,12 +61,17 @@ function EditPriorityItem() {
         navigate("/priorities");
     }
 
-    async function deleteTask() {
+    async function deleteTask(e: any) {
+        e.preventDefault();
         let newItemsData = prioritiesData;
         delete newItemsData[priorityItemId];
-        await finalisePriorityItemsInStorage(idb, newItemsData);
+        await deletePriorityItemFromLocalStorage(idb, priorityItemId);
+        await prepareDeadlineSortPriorityItems(idb, newItemsData);
+        await preparePriSortPriorityItems(idb, newItemsData);
+        // await finalisePriorityItemsInStorage(idb, newItemsData);
         setAlertData({ ...alertData, message: "Item deleted successfully!" });
         addPriorityItemToDeletedList(idb, priorityItemId);
+        setPrioritiesData(newItemsData);
         deletePriorityItemFromServer(db, userData.id, priorityItemId);
         syncPriorityDataFromServer(idb, db, userData.id);
         //uploadPriorityToBeDeletedItemsToServer(db, userData.id);
