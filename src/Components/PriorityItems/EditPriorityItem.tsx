@@ -45,18 +45,23 @@ function EditPriorityItem() {
         currentItem["notes"] = notesRef.current?.value;
         currentItem["priority"] = mapPriority(priorityValue);
         currentItem["lastModifiedOn"] = Date.now();
-        if (newItemStatus)
+
+        if (newItemStatus === 0 || newItemStatus === 1)
             currentItem['status'] = newItemStatus;
-        else
+        else {
             currentItem['status'] = itemStatus !== -1 ? itemStatus : (currentItem['status'] || 0);
+        }
 
         let newItemsData = {
             ...prioritiesData,
         }
+        //currentItem['status'] = 0;
         newItemsData[priorityItemId] = currentItem;
-        setPrioritiesData(newItemsData);
+
         await finalisePriorityItemsInStorage(idb, newItemsData);
-        syncPriorityDataFromServer(idb, db, userData.id);
+        await syncPriorityDataFromServer(idb, db, userData.id);
+
+        setPrioritiesData(newItemsData);
         setAlertData({ ...alertData, message: `Item edited successfully!` });
         navigate("/priorities");
     }
@@ -141,7 +146,7 @@ function EditPriorityItem() {
                     <button type='submit' onClick={saveTask} className='primaryButton'>Save</button>
                     <div style={{ display: "grid", justifyItems: "center", justifySelf: "center" }}>
                         {
-                            itemStatus === 1 ?
+                            itemStatus === 0 ?
                                 <p onClick={toggleItemCompletion} style={{ textAlign: 'center', color: "rgb(35, 112, 255)", cursor: "pointer", width: "fit-content", justifySelf: "center" }}>Mark as completed</p>
                                 :
                                 <p onClick={toggleItemCompletion} style={{ textAlign: 'center', color: "rgb(35, 112, 255)", cursor: "pointer", width: "fit-content", justifySelf: "center" }}>Mark as "In progress"</p>
