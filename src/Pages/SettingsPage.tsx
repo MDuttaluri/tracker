@@ -24,6 +24,7 @@ function getSliderTheme(selectedTheme: AppThemeType) {
 function SettingsPage() {
     const sliderRef = useRef<HTMLDivElement>(null);
     const { themeMode, setThemeMode } = useContext(AppThemeContext);
+    const [storageUsed, setStorageUsed] = useState("")
 
     useEffect(() => {
         if (themeMode === AppThemeType.LIGHT) {
@@ -32,6 +33,15 @@ function SettingsPage() {
             sliderRef?.current?.style.setProperty("animation", "slideToRight 0.2s ease forwards");
         }
     }, [themeMode]);
+
+    useEffect(() => {
+        navigator.storage.estimate()
+            .then((value) => {
+                const sizeInMb = ((value.usage || 0) / (1024 * 1024)).toPrecision(2);
+                setStorageUsed(sizeInMb.toString() + " MB")
+
+            })
+    }, [])
 
 
 
@@ -63,6 +73,11 @@ function SettingsPage() {
                             </div>
                             <MoonIcon height={'20px'} />
                         </div>
+                    </div>
+                    <div className="formRow">
+                        <p>Storage used</p>
+                        <p>:</p>
+                        <p>{storageUsed}</p>
                     </div>
                 </form>
             </div>

@@ -65,11 +65,6 @@ function loadTaskData(setTaskData?: any) {
 
 async function loadPriorityItemsData(setPriorityItems: any, idb: IDBPDatabase<unknown>) {
   const localData = await loadPriorityItemsDataFromLocalStorage(idb) as any;
-  console.log('==================  DATA AFTER LOADING FROM APP.TSX  ==================');
-  console.log(localData);
-  console.log(idb);
-
-  console.log('====================================');
   setPriorityItems({ ...localData });
 }
 

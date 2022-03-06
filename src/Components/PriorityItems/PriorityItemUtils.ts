@@ -13,7 +13,7 @@ export enum ItemsSortType {
     'PRIORITY', 'DEADLINE'
 }
 export enum ItemsStatusType {
-    'COMPLETED', 'INPROGRESS', 'ALL'
+    'INPROGRESS', 'COMPLETED', 'ALL'
 }
 
 export const IDBName = "TraQ.it";
@@ -35,8 +35,7 @@ export async function savePriorityItemsToLocalStorage(db: IDBPDatabase<unknown>,
         })
     })
     
-    console.log(`in the savepri to local stor method`);
-    console.log(items);
+   
     
     
     }
@@ -51,10 +50,14 @@ export async function deletePriorityItemFromLocalStorage(idb: IDBPDatabase<unkno
 }
 
 export async function loadPriorityItemsDataFromLocalStorage(idb: IDBPDatabase<unknown> | null) {
+     
         if(idb){
         let transaction = idb.transaction(PriorityObjStoreNames.MAIN,"readonly");
         let mainObjStore = transaction.objectStore(PriorityObjStoreNames.MAIN);
+        
         let items =  await mainObjStore.getAll();
+         
+
         let finalItems : any = {};
         if(items.length > 0){
             items.map((item)=>{
@@ -131,8 +134,6 @@ export function loadDeadlineSortedItemsFromLocalStorage(idb: IDBPDatabase<unknow
                     finalItems.push(item)
                 })
                 // return finalItems;
-                console.log(`loaded from local :`);
-                console.log(finalItems);
                 return finalItems
             } else {
                 return [];
@@ -237,11 +238,17 @@ const FIRESTORE_PRIORITYDATA_NOTIFICATIONS_PATH = "priorityItemNotifications"
 
 
 async function uploadPriorityItemsToServer(db: Firestore, uid: any, data: any) {
+    if(!navigator.onLine)
+        return;
+    try{
     setDoc(doc(db, FIRESTORE_PRIORITYDATA_COLLECTION_PATH, uid), data);
+    }catch(e){}
 }
 
 async function getPriorityItemsFromServer(db: Firestore, uid: any) {
-
+    if (!navigator.onLine)
+        return null;
+    try{
     const priorityItemsRef = doc(db, FIRESTORE_PRIORITYDATA_COLLECTION_PATH, uid);
     const priorityItems = await getDoc(priorityItemsRef);
     if (priorityItems.exists()) {
@@ -250,37 +257,43 @@ async function getPriorityItemsFromServer(db: Firestore, uid: any) {
     else {
         return null;
     }
+}catch(e){
+    return null
+}
 }
 
 async function getCombinedToBeDeletedPriorityItems(idb :IDBPDatabase<unknown> ,db: Firestore, uid: string) {
     const itemsFromServer = await downloadPriorityToBeDeletedItemsFromServer(db, uid);
-    console.log('====================================');
-    console.log(`to be del from server`);
-    console.log(itemsFromServer);
     
-    console.log('====================================');
     const itemsFromLocal = await loadToBeDeletedPriorityItems(idb);
     return new Set([...itemsFromServer, ...itemsFromLocal]);
 }
 
 
 export async function syncPriorityDataFromServer(idb : IDBPDatabase<unknown>,db: Firestore, uid: string, setState?: any) {
+    if(!navigator.onLine){
+        return;
+    }
     if (!uid || uid.length === 0)
         return;
     const priorityItemsFromLocal: any = await loadPriorityItemsDataFromLocalStorage(idb) || {};
     const priorityItemsFromServerZipped = await getPriorityItemsFromServer(db, uid);
+    
     if (!priorityItemsFromServerZipped) {
         uploadPriorityItemsToServer(db, uid, priorityItemsFromLocal);
+        if (setState) {
+            console.log(`offline`);
+            console.log(priorityItemsFromLocal);
+            
+            
+            setState(priorityItemsFromLocal);
+        }
     } else {
         const priorityItemsFromServer = priorityItemsFromServerZipped;
         const serverItemKeys = Object.keys(priorityItemsFromServer);
         const localItemKeys = Object.keys(priorityItemsFromLocal);
         const combinedKeys = new Set([...serverItemKeys, ...localItemKeys])
-        console.log('====================================');
-        console.log(`combined keys before del`);
-        console.log(combinedKeys);
         
-        console.log('====================================');
         
         const toBeDeltedItems = await getCombinedToBeDeletedPriorityItems(idb, db, uid);
 
@@ -377,11 +390,7 @@ export async function savePriorityItemToDeletedList(idb : IDBPDatabase<unknown>,
         let transaction = idb.transaction(PriorityObjStoreNames.TO_BE_DELETED, "readwrite");
         let  objectStore = transaction.objectStore(PriorityObjStoreNames.TO_BE_DELETED);
         await objectStore.clear();
-        console.log('====================================');
-        console.log(`after clearing to be del`);
-        console.log(items);
         
-        console.log('====================================');
         
         const itemsArray = Array.from(items.values());
         itemsArray.map((item)=>{
@@ -392,6 +401,8 @@ export async function savePriorityItemToDeletedList(idb : IDBPDatabase<unknown>,
 
 
 export async function deletePriorityItemFromServer(db: Firestore, uid: string, itemId: string) {
+    if (!navigator.onLine)
+        return;
     try {
         const deleteObj: any = {}
         deleteObj[itemId] = deleteField()
@@ -406,8 +417,7 @@ export async function loadToBeDeletedPriorityItems(idb : IDBPDatabase<unknown>) 
         let transaction = idb.transaction(PriorityObjStoreNames.TO_BE_DELETED, "readonly");
         let objectStore = transaction.objectStore(PriorityObjStoreNames.TO_BE_DELETED);
         const items = await objectStore.getAll();
-        console.log(`ITEMS LOL`);
-        console.log(items);
+        
         if(!items)
             return [];
         
@@ -420,23 +430,28 @@ export async function loadToBeDeletedPriorityItems(idb : IDBPDatabase<unknown>) 
 
 
 export async function uploadPriorityToBeDeletedItemsToServer(idb: IDBPDatabase<unknown>,db: Firestore, uid: string, items?: any[]) {
+    if (!navigator.onLine)
+        return;
+    try{
     if (!items) {
         items = await loadToBeDeletedPriorityItems(idb);
-        console.log('====================================');
-        console.log(items);
-        console.log('====================================');
+        
     }
     setDoc(doc(db, FIRESTORE_PRIORITYDATA_TOBEDELETED_COLLECTION_PATH, uid), { "ids": items });
+    }catch(e){}
 }
 
 export async function downloadPriorityToBeDeletedItemsFromServer(db: Firestore, uid: string) {
+    if (!navigator.onLine)
+        return[];
+    try{
     const dataFromServer: any = await getDoc(doc(db, FIRESTORE_PRIORITYDATA_TOBEDELETED_COLLECTION_PATH, uid));
     if (dataFromServer.exists()) {
-        console.log(dataFromServer.data());
 
         return dataFromServer.data()['ids']
     }
     return [];
+    }catch(e){return []}
 }
 
 
@@ -456,14 +471,22 @@ export function loadPriorityItemNotificationsFromLocal() {
 }
 
 export async function uploadPriorityItemNotificationsToServer(db: Firestore, uid: string, items?: any) {
+    if (!navigator.onLine)
+        return;
+    try{
     if (!items) {
         items = loadPriorityItemNotificationsFromLocal();
     }
     await setDoc(doc(db, FIRESTORE_PRIORITYDATA_NOTIFICATIONS_PATH, uid), items);
+    }catch(e){}
 }
 
 export async function downloadPriorityItemNotificationsFromServer(db: Firestore, uid: string) {
+    if (!navigator.onLine)
+        return null;
+    try{
     return await getDoc(doc(db, FIRESTORE_PRIORITYDATA_NOTIFICATIONS_PATH, uid));
+    }catch(e){return null}
 }
 
 // async function getCombinedPriorityItemNotifications(db: Firestore, uid: string) {

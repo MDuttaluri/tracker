@@ -35,8 +35,10 @@ function PrioritiesHome() {
     const idb: IDBPDatabase<unknown> = usePriorityIndexedDB() as any;
 
     async function syncAndLoadData() {
-        syncPriorityDataFromServer(idb, db, userData.id, setUserData);
+
+        syncPriorityDataFromServer(idb, db, userData.id, setPrioritiesData);
         const items = await loadPriorityItemsDataFromLocalStorage(idb);
+
         setPrioritiesData(items);
     }
 
@@ -45,7 +47,9 @@ function PrioritiesHome() {
     }
 
     async function loadAndRenderItems() {
-        await loadPriorityItemsDataFromLocalStorage(idb);
+
+        const items = await loadPriorityItemsDataFromLocalStorage(idb);
+        setPrioritiesData(items);
         renderPriorityItems(await getItemsOrder());
     }
 
@@ -53,7 +57,12 @@ function PrioritiesHome() {
         syncAndLoadData();
     }, [])
 
+    useEffect(() => {
+        syncAndLoadData();
+    }, [navigator.onLine])
+
     async function getItemsOrder() {
+
         let itemOrder;
         if (sortType == ItemsSortType.PRIORITY) {
             itemOrder = await loadPriSortedItemsFromLocalStorage(idb) as any;

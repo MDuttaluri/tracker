@@ -6,6 +6,8 @@ import { getAuth, createUserWithEmailAndPassword, User, signInWithEmailAndPasswo
 import './AuthenticationStyles.scss';
 import Loading from '../../Components/Loading/Loading';
 import useAuth from '../../Components/hooks/useAuth';
+import useThemeData from '../../Components/hooks/useThemeData';
+import { ThemeDataType } from '../../ThemeUtils';
 
 
 function Login() {
@@ -17,6 +19,9 @@ function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [isAlreadyLoggedIn, setIsAlreadyLoggedIn] = useState(false);
     const navigate = useNavigate();
+    const themeData = useThemeData()[0];
+
+
     const auth = useAuth();
 
 
@@ -52,7 +57,7 @@ function Login() {
     return <div>
 
         {isLoading && <Loading fullDiv={true} />}
-        <CompactNav backTo='/' content='Login' extraLink={{ label: userData?.name, link: "#" }} />
+        <CompactNav backTo='/' content='Login' extraLink={{ label: <p style={{ color: (themeData as ThemeDataType).color }}>{userData?.name}</p>, link: "#" }} />
         {isAlreadyLoggedIn && <AlreadyLoggedInDialog userMailId={userData?.name || ""} />}
         {!isAlreadyLoggedIn &&
             <form className='form authenticationForm'>
@@ -60,14 +65,14 @@ function Login() {
                 <h1 style={{ textAlign: "center" }}>Login</h1>
                 <div className='formRow'>
                     <label>Username : </label>
-                    <input type="text" ref={usernameRef} />
+                    <input type="text" ref={usernameRef} style={themeData as ThemeDataType} />
                 </div>
                 <div className='formRow'>
                     <label>Password : </label>
-                    <input type="password" ref={passwordRef} />
+                    <input type="password" ref={passwordRef} style={themeData as ThemeDataType} />
                 </div>
-                <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="#">Forgot password?</NavLink>
-                <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px" }} to="/signup">Looking to signup?</NavLink>
+                <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px", color: (themeData as ThemeDataType).color }} to="#">Forgot password?</NavLink>
+                <NavLink style={{ textAlign: "center", fontWeight: "600", letterSpacing: "1px", wordSpacing: "3px", color: (themeData as ThemeDataType).color }} to="/signup">Looking to signup?</NavLink>
                 <button onClick={loginHandler} className='primaryButton'>Go!</button>
             </form>
         }

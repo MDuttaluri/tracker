@@ -1,5 +1,5 @@
 import React, { RefObject, useContext, useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { AlertContext, UserContext } from '../../App';
 import CompactNav from '../../Components/CompactNav/CompactNav';
 import { getAuth, createUserWithEmailAndPassword, User, Auth, sendEmailVerification } from "firebase/auth";
@@ -29,8 +29,8 @@ function Signup() {
     const [authUserData, setAuthUserData] = useState({} as User);
     const auth = useAuth();
     const specificThemeData = useSpecificThemeData()[0];
-    const themeData = useThemeData()[0];
-
+    const themeData = useThemeData()[0] as ThemeDataType;
+    const navigate = useNavigate();
 
 
     function validateForm(e: any) {
@@ -75,7 +75,7 @@ function Signup() {
 
     function formFinalSave(e: any) {
         e.preventDefault();
-
+        setAlertData({ ...alertData, message: "Account creation completed." })
     }
 
 
@@ -106,7 +106,7 @@ function Signup() {
 
     return (
         <div>
-            <CompactNav backTo="/" content='Create an Account' extraLink={{ label: userData?.name, link: "#" }} />
+            <CompactNav backTo="/" content='Create an Account' extraLink={{ label: <p style={{ color: themeData.color }}>{userData?.name}</p>, link: "#" }} />
             <div className='expandableFrom' ref={initFormDivRef} hidden={isInitSetupDone}>
 
                 <form className='form authenticationForm'>
@@ -131,11 +131,12 @@ function Signup() {
             <div className='expandableFrom' style={{ opacity: '0' }} ref={finalFormDivRef} hidden={!isInitSetupDone}>
                 <form className='form authenticationForm'>
                     <h1 style={{ textAlign: "center" }}>Finish setting up your account</h1>
+                    <p style={{ textAlign: "center" }}>This is an optional step and would not affect the application usage. Feel free to skip.</p>
                     <div className='formRow'>
                         <label>Name : </label>
                         <input type="text" ref={nameRef} style={themeData as ThemeDataType} />
                     </div>
-                    <div className='formRow' style={{ justifyContent: "left", columnGap: "25px" }}>
+                    <div className='formRow' style={{ columnGap: "25px", gridTemplateColumns: "auto auto auto" }}>
                         <span>Email Verification : </span>
                         <span>{
                             authUserData?.emailVerified ?
@@ -158,8 +159,8 @@ function Signup() {
 
                     <button className='primaryButton' onClick={formFinalSave}>Save</button>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

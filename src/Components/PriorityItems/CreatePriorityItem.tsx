@@ -53,7 +53,7 @@ function CreatePriorityItem() {
             "notes": notesRef?.current?.value,
             "priority": priorityValue || TaskPriority.NORMAL,
             "itemId": Date.now() + (nameRef?.current?.value || ""),
-            "status": 1,
+            "status": 0,
             "createdOn": Date.now(),
             "lastModifiedOn": Date.now()
         }
