@@ -1,6 +1,6 @@
 import { Auth, getAuth, signOut, User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './App.scss';
 import Calculator from './Components/Calculator/Calculator';
 import CreatePriorityItem from './Components/PriorityItems/CreatePriorityItem';
@@ -23,6 +23,7 @@ import useAuth from './Components/hooks/useAuth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 import usePriorityIndexedDB from './Components/hooks/usePriorityIndexedDB';
 import { IDBPDatabase } from 'idb';
+import { ErrorBoundary } from './Pages/ErrorBoundary';
 
 initaliseFirebase();
 
@@ -102,13 +103,15 @@ function App() {
     loadPriorityItemsData(setPrioritiesData, idb);
   }
 
+
+
   useEffect(() => {
     //Load task data and set it to the local state.
+
     loadThemeData(setAppThemeData);
     loadTaskData(setTaskData);
     syncPriorityDataFromServer(idb, db, userData.id);
     loadPriorityItemsData(setPrioritiesData, idb);
-
   }, [])
 
   useEffect(() => {
@@ -165,6 +168,7 @@ function App() {
                     <Route path="/editPriorityItem/:priorityItemId" element={<EditPriorityItem />} />
                   </Routes>
                 </BrowserRouter>
+
               </div>
             </AlertContext.Provider>
           </TaskDataContext.Provider>
@@ -180,7 +184,15 @@ function HomeScreen() {
 
   const { userData, setUserData } = useContext(UserContext);
   const auth = useAuth();
+  const navigate = useNavigate();
+  const routeOptions = useLocation()
 
+  useEffect(() => {
+    if (routeOptions.state) {
+      const redirectPath = (routeOptions.state as any)['redirect'];
+      navigate(redirectPath);
+    }
+  }, [])
 
   return (
     <div className='landingOuter'>

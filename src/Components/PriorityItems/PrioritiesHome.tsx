@@ -16,6 +16,7 @@ import { NavLink } from 'react-router-dom';
 import useFirestore from '../hooks/useFirestore';
 import usePriorityIndexedDB from '../hooks/usePriorityIndexedDB';
 import { IDBPDatabase } from 'idb';
+import { ErrorBoundary } from '../../Pages/ErrorBoundary';
 
 
 function PrioritiesHome() {
@@ -35,7 +36,8 @@ function PrioritiesHome() {
 
     async function syncAndLoadData() {
         syncPriorityDataFromServer(idb, db, userData.id, setUserData);
-        await loadPriorityItemsDataFromLocalStorage(idb);
+        const items = await loadPriorityItemsDataFromLocalStorage(idb);
+        setPrioritiesData(items);
     }
 
     async function renderPriorityItemsAsync() {
@@ -125,48 +127,50 @@ function PrioritiesHome() {
     }
 
     return (
-        <div style={themeData as ThemeDataType}>
-            <CompactNav backTo='/' content='Priorities' extraLink={{ label: <AddIcon />, link: "/createPriorityItem" }} />
-            <div className="filtersDiv" style={specificThemeData as ThemeDataType}>
-                <span>Sort by : </span>
-                <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.PRIORITY, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.PRIORITY) }}>Priority</button>
-                <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.DEADLINE, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.DEADLINE) }}>Deadline</button>
-                <button className='filterButtonIcon' onClick={() => {
-                    if (isAnimatingTheDiv) {
-                        return;
-                    }
-                    if (!showFilterMenu) {
-                        setShowFilterMenu(!showFilterMenu)
-                        filterMenuRef.current?.style.setProperty("animation", "expandDiv 0.5s ease forwards")
-                    }
-                    else {
-                        filterMenuRef.current?.style.setProperty("animation", "closeDiv 0.5s ease forwards");
-                        setIsAnimatingTheDiv(true);
+        <ErrorBoundary>
+            <div style={themeData as ThemeDataType}>
+                <CompactNav backTo='/' content='Priorities' extraLink={{ label: <AddIcon />, link: "/createPriorityItem" }} />
+                <div className="filtersDiv" style={specificThemeData as ThemeDataType}>
+                    <span>Sort by : </span>
+                    <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.PRIORITY, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.PRIORITY) }}>Priority</button>
+                    <button className='filterButton' style={getFilterButtonStyle(sortType, ItemsSortType.DEADLINE, themeMode)} onClick={(e) => { e.preventDefault(); setSortType(ItemsSortType.DEADLINE) }}>Deadline</button>
+                    <button className='filterButtonIcon' onClick={() => {
+                        if (isAnimatingTheDiv) {
+                            return;
+                        }
+                        if (!showFilterMenu) {
+                            setShowFilterMenu(!showFilterMenu)
+                            filterMenuRef.current?.style.setProperty("animation", "expandDiv 0.5s ease forwards")
+                        }
+                        else {
+                            filterMenuRef.current?.style.setProperty("animation", "closeDiv 0.5s ease forwards");
+                            setIsAnimatingTheDiv(true);
 
-                        setTimeout(() => {
-                            setShowFilterMenu(!showFilterMenu);
-                            setIsAnimatingTheDiv(false);
-                        }, 500)
-                    }
+                            setTimeout(() => {
+                                setShowFilterMenu(!showFilterMenu);
+                                setIsAnimatingTheDiv(false);
+                            }, 500)
+                        }
 
-                }} style={{ color: (themeData as ThemeDataType).color }}>More</button>
-            </div>
-            <div ref={filterMenuRef} className="expandableDiv" hidden={!showFilterMenu}>
-                <div className="filtersDiv expandable--inner" style={specificThemeData as ThemeDataType}>
-                    <span>Status : </span>
-                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.ALL, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.ALL) }}>All</button>
-                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.INPROGRESS, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.INPROGRESS) }}>In progess</button>
-                    <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.COMPLETED, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.COMPLETED) }}>Completed</button>
+                    }} style={{ color: (themeData as ThemeDataType).color }}>More</button>
+                </div>
+                <div ref={filterMenuRef} className="expandableDiv" hidden={!showFilterMenu}>
+                    <div className="filtersDiv expandable--inner" style={specificThemeData as ThemeDataType}>
+                        <span>Status : </span>
+                        <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.ALL, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.ALL) }}>All</button>
+                        <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.INPROGRESS, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.INPROGRESS) }}>In progess</button>
+                        <button className='filterButton' style={getFilterButtonStyle(itemStatus, ItemsStatusType.COMPLETED, themeMode)} onClick={(e) => { e.preventDefault(); setItemStatus(ItemsStatusType.COMPLETED) }}>Completed</button>
+                    </div>
+
+                </div>
+                <div className='outerDiv grid--center taskList' style={themeData as ThemeDataType}>
+                    {
+                        itemsList
+                    }
                 </div>
 
             </div>
-            <div className='outerDiv grid--center taskList' style={themeData as ThemeDataType}>
-                {
-                    itemsList
-                }
-            </div>
-
-        </div>
+        </ErrorBoundary>
     )
 }
 

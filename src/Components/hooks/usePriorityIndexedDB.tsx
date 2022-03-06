@@ -8,7 +8,7 @@ function usePriorityIndexedDB() {
     const openDbCallBack = {
         upgrade: (db: IDBPDatabase, oldVersion: any, newVersion: any, transaction: any) => {
             db.createObjectStore(PriorityObjStoreNames.MAIN, { keyPath: "itemId" })
-            db.createObjectStore(PriorityObjStoreNames.TO_BE_DELETED)
+            db.createObjectStore(PriorityObjStoreNames.TO_BE_DELETED, { autoIncrement: true })
             db.createObjectStore(PriorityObjStoreNames.PRISORTED)
             db.createObjectStore(PriorityObjStoreNames.DEADSORTED)
             setDb(db);
