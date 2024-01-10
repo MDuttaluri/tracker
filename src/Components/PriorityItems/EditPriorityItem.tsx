@@ -24,6 +24,7 @@ function EditPriorityItem() {
     const [alertData, setAlertData] = useContext(AlertContext);
     const [isLoading, setIsLoading] = useState(true);
     const [selector, setSelector] = useState(<></>);
+    const [notesContent, setNotesContent] = useState("")
     const [notificationSetupComponent, setNotificationSetupComponent] = useState(<></>);
     const [itemStatus, setItemStatus] = useState(-1);
     const notesRef = useRef<HTMLTextAreaElement>(null);
@@ -35,6 +36,7 @@ function EditPriorityItem() {
 
 
 
+
     async function saveTask(e: any, newItemStatus?: number) {
         e.preventDefault();
         let currentItem = prioritiesData[priorityItemId];
@@ -42,7 +44,7 @@ function EditPriorityItem() {
         currentItem["itemId"] = priorityItemId;
         currentItem["deadline"] = endDateRef.current?.value;
         currentItem["description"] = descriptionRef.current?.value;
-        currentItem["notes"] = notesRef.current?.value;
+        currentItem["notes"] = notesContent;
         currentItem["priority"] = mapPriority(priorityValue);
         currentItem["lastModifiedOn"] = Date.now();
 
@@ -97,7 +99,8 @@ function EditPriorityItem() {
             nameRef.current?.setAttribute("value", currentItem.itemName);
             endDateRef.current?.setAttribute("value", currentItem.deadline);
             descriptionRef.current?.setAttribute("value", currentItem.description);
-            notesRef.current?.setAttribute("value", currentItem.notes);
+            notesRef.current?.setAttribute("value", currentItem.notes || "");
+            setNotesContent(currentItem.notes || "");
             setItemStatus(prioritiesData[priorityItemId]['status']);
             // notesRef.current?.setAttribute("", currentItem.notes);
             setSelector(<Selector setterFn={setPriorityValue} initLevel={currentItem.priority} />)
@@ -141,7 +144,7 @@ function EditPriorityItem() {
                     */}
                     <div className='formGrid'>
                         <label>Additional Notes</label>
-                        <textarea ref={notesRef} className='formTextArea' style={themeData as ThemeDataType} />
+                        <textarea ref={notesRef} onChange={(e) => { setNotesContent(e.target.value) }} value={notesContent} className='formTextArea' style={themeData as ThemeDataType} />
                     </div>
                     <button type='submit' onClick={saveTask} className='primaryButton'>Save</button>
                     <div style={{ display: "grid", justifyItems: "center", justifySelf: "center" }}>
